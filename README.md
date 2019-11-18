@@ -1,0 +1,2 @@
+# GOJ
+My Online Judge.
