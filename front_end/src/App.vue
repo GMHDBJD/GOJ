@@ -48,16 +48,37 @@
       </v-btn>
     </v-app-bar>
 
-    <!-- Sizes your content based upon application components -->
     <v-content app>
       <v-dialog v-model="dialog_login" max-width="500px">
         <LoginRegister @close="dialog_login = false"></LoginRegister>
       </v-dialog>
-      <div style="height:100vh;">
+      <v-container fluid style="min-height:100vh;">
         <router-view></router-view>
-      </div>
+      </v-container>
       <!-- Provides the application the proper gutter -->
     </v-content>
+
+    <v-footer v-if="$route.meta.show_footer" padless>
+      <v-card flat tile width="100%" class="primary white--text text-center">
+        <v-card-text>
+          <v-btn icon class="mx-4 white--text">
+            <v-icon size="24px">mdi-google</v-icon>
+          </v-btn>
+          <v-btn icon class="mx-4 white--text">
+            <v-icon size="24px">mdi-google</v-icon>
+          </v-btn>
+          <v-btn icon class="mx-4 white--text">
+            <v-icon size="24px">mdi-google</v-icon>
+          </v-btn>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-text class="white--text">
+          {{ new Date().getFullYear() }} — <strong>GOJ</strong>
+        </v-card-text>
+      </v-card>
+    </v-footer>
   </v-app>
 </template>
 

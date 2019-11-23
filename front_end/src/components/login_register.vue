@@ -41,6 +41,7 @@
 
 <script>
 export default {
+  name: 'login_register',
   data: () => ({
     tabs: null
   })
