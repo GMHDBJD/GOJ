@@ -1,4 +1,4 @@
-package com.goj.restservice;
+package com.goj.restservice.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
