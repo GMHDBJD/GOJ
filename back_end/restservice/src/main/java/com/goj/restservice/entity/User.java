@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.sql.Timestamp;
 
-@Entity // This tells Hibernate to make a table out of this class
+@Entity
 public class User {
     @Id
     @Column(length = 48)

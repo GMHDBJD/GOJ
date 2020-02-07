@@ -7,7 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.sql.Timestamp;
 
-@Entity // This tells Hibernate to make a table out of this class
+@Entity
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
