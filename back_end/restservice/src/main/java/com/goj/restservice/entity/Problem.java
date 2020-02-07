@@ -41,8 +41,6 @@ public class Problem {
 
     private long submit;
 
-    private long solved;
-
     private Boolean random_test;
 
     @Column(length = 32)
@@ -165,14 +163,6 @@ public class Problem {
 
     public void setSubmit(long submit) {
         this.submit = submit;
-    }
-
-    public long getSolved() {
-        return solved;
-    }
-
-    public void setSolved(long solved) {
-        this.solved = solved;
     }
 
     public Boolean getRandomTest() {

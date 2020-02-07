@@ -19,7 +19,9 @@ public class User {
 
     private long submit;
 
-    private long solved;
+    private long accepted;
+
+    private int ratio;
 
     @Column(length = 32)
     private String password;
@@ -63,13 +65,22 @@ public class User {
         this.submit = submit;
     }
 
-    public long getSolved() {
-        return solved;
+    public long getAccepted() {
+        return accepted;
     }
 
-    public void setSolved(long solved) {
-        this.solved = solved;
+    public void setAccepted(long accepted) {
+        this.accepted = accepted;
     }
+
+    public long getRatio() {
+        return ratio;
+    }
+
+    public void setRatio(int ratio) {
+        this.ratio = ratio;
+    }
+
 
     public Timestamp getAccessTime() {
         return access_time;
