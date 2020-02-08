@@ -46,10 +46,6 @@ public class Problem {
     @Column(length = 32)
     private String password;
 
-    private Timestamp register_time;
-
-    private Timestamp access_time;
-
     @Column(length = 46)
     private String ip;
 
@@ -179,22 +175,6 @@ public class Problem {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Timestamp getRegisterTime() {
-        return register_time;
-    }
-
-    public void setRegisterTime(Timestamp register_time) {
-        this.register_time = register_time;
-    }
-
-    public Timestamp getAccessTime() {
-        return access_time;
-    }
-
-    public void setAccessTime(Timestamp access_time) {
-        this.access_time = access_time;
     }
 
     public String getIp() {
