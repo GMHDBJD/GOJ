@@ -8,9 +8,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
 import java.sql.Timestamp;
 
+@Data
 @Entity
+@RequiredArgsConstructor
 public class Contest {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,51 +37,4 @@ public class Contest {
     @Column(length = 32)
     private String password;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Timestamp getStartTime() {
-        return start_time;
-    }
-
-    public void setStartTime(Timestamp start_time) {
-        this.start_time = start_time;
-    }
-
-    public Timestamp getEndTime() {
-        return end_time;
-    }
-
-    public void setEndTime(Timestamp end_time) {
-        this.end_time = end_time;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

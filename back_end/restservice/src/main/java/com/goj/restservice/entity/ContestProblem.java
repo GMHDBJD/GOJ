@@ -8,6 +8,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
 import java.io.Serializable;
 
 @Embeddable
@@ -27,7 +30,9 @@ class ContestProblemKey implements Serializable {
     // hashcode and equals implementation
 }
 
+@Data
 @Entity
+@RequiredArgsConstructor
 public class ContestProblem {
 
     @EmbeddedId
@@ -49,29 +54,5 @@ public class ContestProblem {
     private long accepted;
 
     private long submit;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public long getAccepted() {
-        return accepted;
-    }
-
-    public void setAccepted(long accepted) {
-        this.accepted = accepted;
-    }
-
-    public long getSubmit() {
-        return submit;
-    }
-
-    public void setSubmit(long submit) {
-        this.submit = submit;
-    }
 
 }

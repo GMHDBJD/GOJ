@@ -5,7 +5,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+@Data
 @Entity
+@RequiredArgsConstructor
 public class SourceCode {
 
     @Id
@@ -14,11 +19,4 @@ public class SourceCode {
 
     private String code;
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
 }
