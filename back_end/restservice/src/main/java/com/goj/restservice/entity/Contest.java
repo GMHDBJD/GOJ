@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 public class Contest {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long contest_id;
+    private Long contest_id;
 
     @Column(length = 255)
     private String title;

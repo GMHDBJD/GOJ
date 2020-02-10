@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long problemId;
+    private Long problemId;
 
     @Column(length = 200, nullable = false)
     @NotNull(message = "title could not be null")
@@ -44,13 +44,13 @@ public class Problem {
     @Temporal(TemporalType.DATE)
     private Date createDate;
 
-    private long timeLimit;
+    private Long timeLimit;
 
-    private long memoryLimit;
+    private Long memoryLimit;
 
-    private long accepted;
+    private Long accepted;
 
-    private long submit;
+    private Long submit;
 
     private int ratio;
 

@@ -23,9 +23,9 @@ public class User {
     @Column(length = 100)
     private String email;
 
-    private long submit;
+    private Long submit;
 
-    private long accepted;
+    private Long accepted;
 
     private int ratio;
 

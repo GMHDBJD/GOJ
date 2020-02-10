@@ -15,7 +15,7 @@ public class SourceCode {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long submissionId;
+    private Long submissionId;
 
     private String code;
 

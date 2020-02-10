@@ -51,8 +51,8 @@ public class ContestProblem {
     @Column(length = 255)
     private String title;
 
-    private long accepted;
+    private Long accepted;
 
-    private long submit;
+    private Long submit;
 
 }
