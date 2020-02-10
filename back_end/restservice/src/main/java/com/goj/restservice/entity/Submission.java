@@ -19,12 +19,12 @@ import java.sql.Timestamp;
 public class Submission {
     @Id
     @Column(unique = true, nullable = false)
-    private long submission_id;
+    private long submissionId;
 
     @MapsId
     @OneToOne
     @JoinColumn(name = "submission_id")
-    private SourceCode source_code;
+    private SourceCode sourceCode;
 
     @ManyToOne
     @JoinColumn(name = "problem_id")
@@ -42,7 +42,7 @@ public class Submission {
 
     private short language;
 
-    private Timestamp in_date;
+    private Timestamp inDate;
 
     @Column(length = 46)
     private String ip;
@@ -51,8 +51,8 @@ public class Submission {
     @JoinColumn(name = "contest_id")
     private Contest contest;
 
-    private long code_length;
+    private long codeLength;
 
-    private Timestamp judge_time;
+    private Timestamp judgeTime;
 
 }

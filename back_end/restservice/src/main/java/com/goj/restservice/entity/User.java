@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 public class User {
     @Id
     @Column(length = 48)
-    private String user_id;
+    private String userId;
 
     @Column(length = 20)
     private String nickname;
@@ -32,9 +32,9 @@ public class User {
     @Column(length = 32)
     private String password;
 
-    private Timestamp register_time;
+    private Timestamp registerTime;
 
-    private Timestamp access_time;
+    private Timestamp accessTime;
 
     @Column(length = 46)
     private String ip;

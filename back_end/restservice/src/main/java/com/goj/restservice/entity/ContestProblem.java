@@ -21,10 +21,10 @@ class ContestProblemKey implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Column(name = "problem_id")
-    Long problem_id;
+    Long problemId;
 
     @Column(name = "contest_id")
-    Long contest_id;
+    Long contestId;
 
     // standard constructors, getters, and setters
     // hashcode and equals implementation
@@ -36,7 +36,7 @@ class ContestProblemKey implements Serializable {
 public class ContestProblem {
 
     @EmbeddedId
-    ContestProblemKey contest_problem_key;
+    ContestProblemKey contestProblemKey;
 
     @ManyToOne
     @MapsId("problem_id")

@@ -26,9 +26,9 @@ public class Contest {
 
     private String description;
 
-    private Timestamp start_time;
+    private Timestamp startTime;
 
-    private Timestamp end_time;
+    private Timestamp endTime;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

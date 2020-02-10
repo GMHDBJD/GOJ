@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long problem_id;
+    private long problemId;
 
     @Column(length = 200, nullable = false)
     @NotNull(message = "title could not be null")
@@ -35,29 +35,31 @@ public class Problem {
 
     private String output;
 
-    private String sample_input;
+    private String sampleInput;
 
-    private String sample_output;
+    private String sampleOutput;
 
     private String hint;
 
     @Temporal(TemporalType.DATE)
-    private Date create_date;
+    private Date createDate;
 
-    private long time_limit;
+    private long timeLimit;
 
-    private long memory_limit;
+    private long memoryLimit;
 
     private long accepted;
 
     private long submit;
 
-    private Boolean random_test;
+    private int ratio;
+
+    private Boolean randomTest;
 
     @PrePersist
     protected void prePersist() {
-        if (create_date == null)
-            create_date = new Date();
+        if (createDate == null)
+            createDate = new Date();
     }
 
 }
