@@ -11,7 +11,7 @@ import javax.persistence.OneToOne;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -42,7 +42,7 @@ public class Submission {
 
     private short language;
 
-    private Timestamp inDate;
+    private LocalDateTime submitDatetime;
 
     @Column(length = 46)
     private String ip;
@@ -53,6 +53,6 @@ public class Submission {
 
     private Long codeLength;
 
-    private Timestamp judgeTime;
+    private LocalDateTime judgeTime;
 
 }

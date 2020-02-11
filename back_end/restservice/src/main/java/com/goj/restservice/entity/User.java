@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -32,9 +32,9 @@ public class User {
     @Column(length = 32)
     private String password;
 
-    private Timestamp registerTime;
+    private LocalDateTime registerTime;
 
-    private Timestamp accessTime;
+    private LocalDateTime accessTime;
 
     @Column(length = 46)
     private String ip;

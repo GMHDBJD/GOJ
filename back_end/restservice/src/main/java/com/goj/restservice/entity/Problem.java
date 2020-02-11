@@ -1,14 +1,12 @@
 package com.goj.restservice.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -41,8 +39,7 @@ public class Problem {
 
     private String hint;
 
-    @Temporal(TemporalType.DATE)
-    private Date createDate;
+    private LocalDate createDate;
 
     private Long timeLimit;
 
@@ -59,7 +56,7 @@ public class Problem {
     @PrePersist
     protected void prePersist() {
         if (createDate == null)
-            createDate = new Date();
+            createDate = LocalDate.now();
     }
 
 }
