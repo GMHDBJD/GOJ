@@ -3,7 +3,7 @@ package com.goj.restservice.service;
 import java.util.Optional;
 
 import com.goj.restservice.entity.Problem;
-import com.goj.restservice.projection.ProblemProjection;
+import com.goj.restservice.projection.ProblemSummary;
 import com.goj.restservice.repository.ProblemRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +16,13 @@ public class ProblemService {
     @Autowired
     private ProblemRepository problemRepository;
 
-    public Problem create(Problem new_problem) {
-        return problemRepository.save(new_problem);
+    public Problem create(Problem newProblem) {
+        return problemRepository.save(newProblem);
     }
 
-    public Iterable<ProblemProjection> readAll(int page, int per_page) {
-        Page<ProblemProjection> pageResult = problemRepository
-                .findAllProblemProjectionBy(PageRequest.of(page, per_page));
+    public Iterable<ProblemSummary> readAll(int page, int per_page) {
+        Page<ProblemSummary> pageResult = problemRepository
+                .findAllProblemSummaryBy(PageRequest.of(page, per_page));
         return pageResult.getContent();
     }
 
@@ -34,8 +34,8 @@ public class ProblemService {
             return null;
     }
 
-    public void update(Problem new_problem) {
-        problemRepository.save(new_problem);
+    public void update(Problem newProblem) {
+        problemRepository.save(newProblem);
     }
 
     public void delete(Long problemId) {

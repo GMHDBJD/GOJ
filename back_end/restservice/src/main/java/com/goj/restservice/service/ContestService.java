@@ -3,7 +3,8 @@ package com.goj.restservice.service;
 import java.util.Optional;
 
 import com.goj.restservice.entity.Contest;
-import com.goj.restservice.projection.ContestProjection;
+import com.goj.restservice.projection.ContestDetail;
+import com.goj.restservice.projection.ContestSummary;
 import com.goj.restservice.repository.ContestRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,26 +17,26 @@ public class ContestService {
     @Autowired
     private ContestRepository contestRepository;
 
-    public Contest create(Contest new_contest) {
-        return contestRepository.save(new_contest);
+    public Contest create(Contest newContest) {
+        return contestRepository.save(newContest);
     }
 
-    public Iterable<ContestProjection> readAll(int page, int per_page) {
-        Page<ContestProjection> pageResult = contestRepository
-                .findAllContestProjectionBy(PageRequest.of(page, per_page));
+    public Iterable<ContestSummary> readAll(int page, int per_page) {
+        Page<ContestSummary> pageResult = contestRepository
+                .findAllContestSummaryBy(PageRequest.of(page, per_page));
         return pageResult.getContent();
     }
 
-    public Contest readOne(Long contestId) {
-        Optional<Contest> result = contestRepository.findById(contestId);
+    public ContestDetail readOne(Long contestId) {
+        Optional<ContestDetail> result = contestRepository.findByContestId(contestId);
         if (result.isPresent())
             return result.get();
         else
             return null;
     }
 
-    public void update(Contest new_contest) {
-        contestRepository.save(new_contest);
+    public void update(Contest newContest) {
+        contestRepository.save(newContest);
     }
 
     public void delete(Long contestId) {
