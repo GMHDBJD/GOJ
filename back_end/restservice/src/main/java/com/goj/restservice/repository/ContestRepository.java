@@ -4,12 +4,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import java.util.Optional;
+
 import com.goj.restservice.entity.Contest;
-import com.goj.restservice.projection.ContestProjection;
+import com.goj.restservice.projection.ContestDetail;
+import com.goj.restservice.projection.ContestSummary;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
 
 public interface ContestRepository extends PagingAndSortingRepository<Contest, Long> {
-    Page<ContestProjection> findAllContestProjectionBy(Pageable pageable);
+    Page<ContestSummary> findAllContestSummaryBy(Pageable pageable);
+
+    Page<ContestDetail> findAllContestDetailBy(Pageable pageable);
+
+    Optional<ContestDetail> findByContestId(Long contestId);
 }
