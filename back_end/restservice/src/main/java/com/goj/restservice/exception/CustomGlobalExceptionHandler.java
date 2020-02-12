@@ -13,8 +13,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +27,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     @Data
     @AllArgsConstructor
     public class ErrorDetails {
-        private Date timestamp;
+        private LocalDateTime timestamp;
         private int status;
         private List<String> errors;
     }
@@ -39,7 +39,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         List<String> errors = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());
 
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), status.value(), errors);
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), status.value(), errors);
 
         return new ResponseEntity<>(errorDetails, headers, status);
 
@@ -48,7 +48,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<Object> handleCustomException(CustomException ex, WebRequest request) {
 
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getHttpStatus().value(),
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getHttpStatus().value(),
                 Arrays.asList(ex.getMessage()));
 
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
@@ -62,7 +62,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         List<String> errors = ex.getConstraintViolations().parallelStream().map(e -> e.getMessage())
                 .collect(Collectors.toList());
 
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.BAD_REQUEST.value(), errors);
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), errors);
 
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
 
