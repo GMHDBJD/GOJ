@@ -1,9 +1,9 @@
 package com.goj.restservice.projection;
 
-public interface ProblemProjection {
+public interface ProblemSummary {
     Long getProblemId();
 
     String getTitle();
 
-    String getRatio();
+    Integer getRatio();
 }
