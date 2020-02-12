@@ -42,7 +42,7 @@ public class Submission {
 
     private short language;
 
-    private LocalDateTime submitDatetime;
+    private LocalDateTime submitDateTime;
 
     @Column(length = 46)
     private String ip;
