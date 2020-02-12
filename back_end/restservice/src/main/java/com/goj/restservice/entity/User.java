@@ -3,11 +3,13 @@ package com.goj.restservice.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Entity
@@ -39,4 +41,6 @@ public class User {
     @Column(length = 46)
     private String ip;
 
+    @ManyToMany(mappedBy = "users")
+    private Set<Contest> contests;
 }

@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class SourceCode {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long submissionId;
 
     private String code;

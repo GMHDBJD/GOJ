@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Problem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long problemId;
 
     @Column(length = 200, nullable = false)
@@ -49,7 +49,7 @@ public class Problem {
 
     private Long submit;
 
-    private int ratio;
+    private Integer ratio;
 
     private Boolean randomTest;
 
