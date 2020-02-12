@@ -23,7 +23,7 @@ import javax.validation.constraints.Min;
 
 import com.goj.restservice.entity.Problem;
 import com.goj.restservice.exception.CustomException;
-import com.goj.restservice.projection.ProblemProjection;
+import com.goj.restservice.projection.ProblemSummary;
 import com.goj.restservice.service.ProblemService;
 
 import static com.goj.restservice.util.Util.checkResourceFound;
@@ -37,24 +37,24 @@ public class ProblemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@Valid @RequestBody Problem new_problem, HttpServletRequest request,
+    public void create(@Valid @RequestBody Problem newProblem, HttpServletRequest request,
             HttpServletResponse response) {
-        Problem createdProblem = problemService.create(new_problem);
+        newProblem.setProblemId(null);
+        Problem createdProblem = problemService.create(newProblem);
         response.setHeader("Location",
                 request.getRequestURL().append("/").append(createdProblem.getProblemId()).toString());
 
     }
 
     @GetMapping
-    public @ResponseBody Iterable<ProblemProjection> readAll(
+    public @ResponseBody Iterable<ProblemSummary> readAll(
             @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
             @RequestParam(value = "per_page", defaultValue = "30") @Min(value = 1, message = "per_page must be greater than or equal to 1") @Max(value = 100, message = "per_page must be lower than or equal to 100") int per_page) {
         return problemService.readAll(page - 1, per_page);
     }
 
     @GetMapping("/{problemId}")
-    public @ResponseBody Problem readOne(
-            @PathVariable("problemId") @Min(value = 1, message = "per_page must be greater than or equal to 1") Long problemId) {
+    public @ResponseBody Problem readOne(@PathVariable("problemId") Long problemId) {
         Problem problem = problemService.readOne(problemId);
         checkResourceFound(problem);
         return problem;
@@ -62,12 +62,12 @@ public class ProblemController {
 
     @PutMapping("/{problemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable("problemId") Long problemId,@Valid @RequestBody Problem problem,
+    public void update(@PathVariable("problemId") Long problemId, @Valid @RequestBody Problem newProblem,
             HttpServletRequest request, HttpServletResponse response) {
-        checkResourceFound(problemService.readOne(problemId));
-        if (problemId != problem.getProblemId())
+        if (problemId != newProblem.getProblemId())
             throw new CustomException("problemId doesn't match", HttpStatus.BAD_REQUEST);
-        problemService.update(problem);
+        checkResourceFound(problemService.readOne(problemId));
+        problemService.update(newProblem);
     }
 
     @DeleteMapping("/{problemId}")

@@ -23,7 +23,8 @@ import javax.validation.constraints.Min;
 
 import com.goj.restservice.entity.Contest;
 import com.goj.restservice.exception.CustomException;
-import com.goj.restservice.projection.ContestProjection;
+import com.goj.restservice.projection.ContestDetail;
+import com.goj.restservice.projection.ContestSummary;
 import com.goj.restservice.service.ContestService;
 
 import static com.goj.restservice.util.Util.checkResourceFound;
@@ -37,37 +38,37 @@ public class ContestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@Valid @RequestBody Contest new_contest, HttpServletRequest request,
+    public void create(@Valid @RequestBody Contest newContest, HttpServletRequest request,
             HttpServletResponse response) {
-        Contest createdContest = contestService.create(new_contest);
+        newContest.setContestId(null);
+        Contest createdContest = contestService.create(newContest);
         response.setHeader("Location",
                 request.getRequestURL().append("/").append(createdContest.getContestId()).toString());
 
     }
 
     @GetMapping
-    public @ResponseBody Iterable<ContestProjection> readAll(
+    public @ResponseBody Iterable<ContestSummary> readAll(
             @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
             @RequestParam(value = "per_page", defaultValue = "30") @Min(value = 1, message = "per_page must be greater than or equal to 1") @Max(value = 100, message = "per_page must be lower than or equal to 100") int per_page) {
         return contestService.readAll(page - 1, per_page);
     }
 
     @GetMapping("/{contestId}")
-    public @ResponseBody Contest readOne(
-            @PathVariable("contestId") @Min(value = 1, message = "per_page must be greater than or equal to 1") Long contestId) {
-        Contest contest = contestService.readOne(contestId);
-        checkResourceFound(contest);
-        return contest;
+    public @ResponseBody ContestDetail readOne(@PathVariable("contestId") Long contestId) {
+        ContestDetail contestDetail = contestService.readOne(contestId);
+        checkResourceFound(contestDetail);
+        return contestDetail;
     }
 
     @PutMapping("/{contestId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable("contestId") Long contestId,@Valid @RequestBody Contest contest,
+    public void update(@PathVariable("contestId") Long contestId, @Valid @RequestBody Contest newContest,
             HttpServletRequest request, HttpServletResponse response) {
-        checkResourceFound(contestService.readOne(contestId));
-        if (contestId != contest.getContestId())
+        if (contestId != newContest.getContestId())
             throw new CustomException("contestId doesn't match", HttpStatus.BAD_REQUEST);
-        contestService.update(contest);
+        checkResourceFound(contestService.readOne(contestId));
+        contestService.update(newContest);
     }
 
     @DeleteMapping("/{contestId}")
