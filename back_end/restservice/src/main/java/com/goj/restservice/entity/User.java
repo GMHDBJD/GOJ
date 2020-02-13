@@ -57,15 +57,12 @@ public class User implements UserDetails {
     private List<String> roles = new ArrayList<>();
 
     @Column(nullable = false)
-    @Builder.Default
     private Long submit = 0L;
 
     @Column(nullable = false)
-    @Builder.Default
     private Long accepted = 0L;
 
     @Column(nullable = false)
-    @Builder.Default
     private Integer ratio = 0;
 
     @Column(length = 100)

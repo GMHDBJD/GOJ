@@ -24,7 +24,7 @@ import com.goj.restservice.projection.SubmissionDetail;
 import com.goj.restservice.projection.SubmissionSummary;
 import com.goj.restservice.service.SubmissionService;
 
-import static com.goj.restservice.util.Util.checkResourceFound;
+import com.goj.restservice.util.Util;
 
 @RestController
 @RequestMapping(path = "/v1/status")
@@ -32,6 +32,9 @@ import static com.goj.restservice.util.Util.checkResourceFound;
 public class SubmissionController {
     @Autowired
     private SubmissionService submissionService;
+
+    @Autowired
+    private Util util;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -54,7 +57,7 @@ public class SubmissionController {
     @GetMapping("/{submissionId}")
     public @ResponseBody SubmissionDetail readOne(@PathVariable("submissionId") Long submissionId) {
         SubmissionDetail submissionDetail = submissionService.readOne(submissionId);
-        checkResourceFound(submissionDetail);
+        util.checkResourceFound(submissionDetail);
         return submissionDetail;
     }
 }

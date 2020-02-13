@@ -9,9 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +25,12 @@ public class Contest {
     private Long contestId;
 
     @Column(length = 255, nullable = false)
-    @NotNull(message = "title could not be null")
     private String title;
 
     private String description;
 
-    @NotNull(message = "startTime could not be null")
     private LocalDateTime startTime;
 
-    @Future(message = "endTime must be a future date")
-    @NotNull(message = "endTime could not be null")
     private LocalDateTime endTime;
 
     @ManyToMany
@@ -47,13 +40,13 @@ public class Contest {
     @ManyToOne
     private User createUser;
 
-    @Column(length = 32)
+    @Column(length = 100)
     private String password;
 
-    @AssertTrue(message = "endTime should be after than startTime")
-    public boolean isValid() {
-        if (startTime == null || endTime == null)
-            return false;
-        return endTime.isAfter(startTime);
+    public Contest(String title, String description, LocalDateTime startTime, LocalDateTime endTime) {
+        this.title = title;
+        this.description = description;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }

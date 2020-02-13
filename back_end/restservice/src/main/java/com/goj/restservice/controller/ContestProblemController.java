@@ -30,7 +30,7 @@ import com.goj.restservice.service.ContestProblemService;
 import com.goj.restservice.service.ContestService;
 import com.goj.restservice.service.ProblemService;
 
-import static com.goj.restservice.util.Util.checkResourceFound;
+import com.goj.restservice.util.Util;
 
 @RestController
 @RequestMapping(path = "/v1/contests/{contestId}/problems")
@@ -45,9 +45,12 @@ public class ContestProblemController {
     @Autowired
     private ProblemService problemService;
 
+    @Autowired
+    Util util;
+
     private void contestIsExist(Long contestId) throws CustomException {
         ContestDetail contestDetail = contestService.readOne(contestId);
-        checkResourceFound(contestDetail);
+        util.checkResourceFound(contestDetail);
         if (contestId != contestDetail.getContestId())
             throw new CustomException("contestId doesn't match", HttpStatus.BAD_REQUEST);
     }
@@ -63,7 +66,7 @@ public class ContestProblemController {
         contestIsExist(contestId);
 
         Problem problem = problemService.readOne(newContestProblem.getProblemId());
-        checkResourceFound(problem);
+        util.checkResourceFound(problem);
 
         newContestProblem.setTitle(problem.getTitle());
         ContestProblem createdContestProblem = contestProblemService.create(newContestProblem);

@@ -26,7 +26,7 @@ import com.goj.restservice.exception.CustomException;
 import com.goj.restservice.projection.ProblemSummary;
 import com.goj.restservice.service.ProblemService;
 
-import static com.goj.restservice.util.Util.checkResourceFound;
+import com.goj.restservice.util.Util;
 
 @RestController
 @RequestMapping(path = "/v1/problems")
@@ -34,6 +34,9 @@ import static com.goj.restservice.util.Util.checkResourceFound;
 public class ProblemController {
     @Autowired
     private ProblemService problemService;
+
+    @Autowired
+    Util util;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -56,7 +59,7 @@ public class ProblemController {
     @GetMapping("/{problemId}")
     public @ResponseBody Problem readOne(@PathVariable("problemId") Long problemId) {
         Problem problem = problemService.readOne(problemId);
-        checkResourceFound(problem);
+        util.checkResourceFound(problem);
         return problem;
     }
 
@@ -66,7 +69,7 @@ public class ProblemController {
             HttpServletRequest request, HttpServletResponse response) {
         if (problemId != newProblem.getProblemId())
             throw new CustomException("problemId doesn't match", HttpStatus.BAD_REQUEST);
-        checkResourceFound(problemService.readOne(problemId));
+        util.checkResourceFound(problemService.readOne(problemId));
         problemService.update(newProblem);
     }
 

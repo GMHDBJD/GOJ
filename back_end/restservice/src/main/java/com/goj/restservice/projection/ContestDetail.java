@@ -2,8 +2,6 @@ package com.goj.restservice.projection;
 
 import java.time.LocalDate;
 
-import com.goj.restservice.entity.User;
-
 public interface ContestDetail {
     Long getContestId();
 
@@ -15,5 +13,5 @@ public interface ContestDetail {
 
     LocalDate getEndTime();
 
-    User getCreateUser();
+    String getCreateUserUsername();
 }
