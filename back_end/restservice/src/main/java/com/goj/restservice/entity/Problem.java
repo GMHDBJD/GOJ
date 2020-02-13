@@ -39,19 +39,24 @@ public class Problem {
 
     private String hint;
 
+    @Column(nullable = false)
     private LocalDate createDate;
 
     private Long timeLimit;
 
     private Long memoryLimit;
 
-    private Long accepted;
+    @Column(nullable = false)
+    private Long accepted = 0L;
 
-    private Long submit;
+    @Column(nullable = false)
+    private Long submit = 0L;
 
-    private Integer ratio;
+    @Column(nullable = false)
+    private Integer ratio = 0;
 
-    private Boolean randomTest;
+    @Column(nullable = false)
+    private Boolean randomTest = false;
 
     @PrePersist
     protected void prePersist() {

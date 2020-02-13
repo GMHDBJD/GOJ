@@ -24,8 +24,6 @@ public class ContestProblem {
     @NotNull(message = "contestId could not be null")
     private Long contestId;
 
-
-
     @ManyToOne
     @JoinColumn(name = "problemId", updatable = false, insertable = false, referencedColumnName = "problemId")
     Problem problem;
@@ -37,10 +35,13 @@ public class ContestProblem {
     @Column(length = 255)
     private String title;
 
-    private Long accepted;
+    @Column(nullable = false)
+    private Long accepted = 0L;
 
-    private Long submit;
+    @Column(nullable = false)
+    private Long submit = 0L;
 
-    private Integer ratio;
+    @Column(nullable = false)
+    private Integer ratio = 0;
 
 }

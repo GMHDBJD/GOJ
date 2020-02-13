@@ -8,6 +8,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 
+import org.springframework.data.annotation.CreatedDate;
+
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -40,8 +42,11 @@ public class Submission {
 
     private short result;
 
+    @Column(nullable = false)
     private short language;
 
+    @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime submitDateTime;
 
     @Column(length = 46)
