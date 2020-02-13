@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -68,6 +69,7 @@ public class User implements UserDetails {
     @Column(length = 100)
     private String password;
 
+    @CreatedDate
     private LocalDateTime registerTime;
 
     private LocalDateTime accessTime;
@@ -78,7 +80,7 @@ public class User implements UserDetails {
     @ManyToMany(mappedBy = "users")
     private Set<Contest> contests;
 
-    public User(String username, String nickname, String email) {
+    public User(final String username, final String nickname, final String email) {
         this.username = username;
         this.nickname = nickname;
         this.email = email;
