@@ -7,7 +7,7 @@ public interface SubmissionSummary {
 
     Long getProblemProblemId();
 
-    String getUserUserId();
+    String getUserUsername();
 
     Long getTime();
 
