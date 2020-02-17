@@ -35,10 +35,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic().disable().csrf().disable().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers("/v1/auth/signin").permitAll()
-                .antMatchers("/v1/auth/signup").permitAll()
+                .antMatchers("/v1/auth/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/v1/contests").permitAll()
+                .antMatchers(HttpMethod.GET, "/v1/contests/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/v1/contests/*/users").authenticated()
                 .antMatchers(HttpMethod.GET, "/v1/problems/**").permitAll()
-                .anyRequest().authenticated().and()
+                .antMatchers(HttpMethod.GET, "/v1/submissions").permitAll()
+                .antMatchers(HttpMethod.GET, "/v1/submissions/**").authenticated()
+                .antMatchers(HttpMethod.GET, "/v1/users/**").authenticated()
+                .anyRequest().hasRole("admin").and()
                 /*
                  * .antMatchers("/auth/signin").permitAll(). antMatchers(HttpMethod.GET,
                  * "/vehicles/**").permitAll() .antMatchers(HttpMethod.DELETE,
