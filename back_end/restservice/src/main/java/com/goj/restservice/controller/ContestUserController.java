@@ -15,34 +15,34 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import com.goj.restservice.entity.ContestProblem;
-import com.goj.restservice.entity.Problem;
-import com.goj.restservice.entity.ContestProblemId;
+import com.goj.restservice.entity.Contest;
+import com.goj.restservice.entity.ContestUser;
+import com.goj.restservice.entity.ContestUserId;
 import com.goj.restservice.exception.CustomException;
-import com.goj.restservice.projection.ProblemSummary;
+import com.goj.restservice.projection.UserDetail;
+import com.goj.restservice.projection.UserSummary;
 import com.goj.restservice.repository.ContestRepository;
-import com.goj.restservice.service.ContestProblemService;
-import com.goj.restservice.service.ProblemService;
+import com.goj.restservice.service.ContestUserService;
+import com.goj.restservice.service.UserService;
 
 import com.goj.restservice.util.Util;
 
 @RestController
-@RequestMapping(path = "/v1/contests/{contestId}/problems")
+@RequestMapping(path = "/v1/contests/{contestId}/users")
 @Validated
-public class ContestProblemController {
+public class ContestUserController {
     @Autowired
-    private ContestProblemService contestProblemService;
+    private ContestUserService contestUserService;
 
     @Autowired
     private ContestRepository contestRepository;
 
     @Autowired
-    private ProblemService problemService;
+    private UserService userService;
 
     @Autowired
     Util util;
@@ -50,44 +50,48 @@ public class ContestProblemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@PathVariable("contestId") Long contestId,
-            @Valid @RequestParam(name = "problemId") @Min(value = 1, message = "problemId must be greater than or equal to 1") @NotNull(message = "problemId could not be null") Long problemId,
+            @NotNull(message = "username could not be null") String username, String password,
             HttpServletRequest request, HttpServletResponse response) {
 
-        if (contestRepository.existsById(contestId))
-            throw new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST);
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(() -> new CustomException("Contest doesn't exist", HttpStatus.BAD_REQUEST));
 
-        Problem problem = problemService.readOne(problemId);
-        util.checkResourceFound(problem);
+        if (contest.getPassword() != null && !contest.getPassword().equals(password)) {
+            throw new CustomException("wrong password.", HttpStatus.BAD_REQUEST);
+        }
 
-        ContestProblem newContestProblem = new ContestProblem(contestId, problemId, problem.getTitle());
-        ContestProblem createdContestProblem = contestProblemService.create(newContestProblem);
+        UserDetail userDetail = userService.readOne(username);
+        util.checkResourceFound(userDetail);
+
+        ContestUser newContestUser = new ContestUser(contestId, userDetail.getUserId());
+        ContestUser createdContestUser = contestUserService.create(newContestUser);
 
         response.setHeader("Location",
-                request.getRequestURL().append("/").append(createdContestProblem.getProblemId()).toString());
+                request.getRequestURL().append("/").append(createdContestUser.getUserId()).toString());
 
     }
 
     @GetMapping
-    public @ResponseBody Iterable<ProblemSummary> readAll(@PathVariable("contestId") Long contestId,
+    public @ResponseBody Iterable<UserSummary> readAll(@PathVariable("contestId") Long contestId,
             @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
             @RequestParam(value = "per_page", defaultValue = "30") @Min(value = 1, message = "per_page must be greater than or equal to 1") @Max(value = 100, message = "per_page must be less than or equal to 100") int per_page) {
 
         if (contestRepository.existsById(contestId))
-            throw new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST);
+            throw new CustomException("Contest doesn't match.", HttpStatus.BAD_REQUEST);
 
-        return contestProblemService.readAll(contestId, page - 1, per_page);
+        return contestUserService.readAll(contestId, page - 1, per_page);
     }
 
-    @DeleteMapping("/{problemId}")
+    @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("contestId") Long contestId, @PathVariable("problemId") Long problemId,
+    public void delete(@PathVariable("contestId") Long contestId, @PathVariable("userId") Long userId,
             HttpServletRequest request, HttpServletResponse response) {
 
         if (contestRepository.existsById(contestId))
-            throw new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST);
+            throw new CustomException("Contest doesn't match.", HttpStatus.BAD_REQUEST);
 
-        ContestProblemId contestProblemId = new ContestProblemId(problemId, contestId);
+        ContestUserId contestUserId = new ContestUserId(userId, contestId);
 
-        contestProblemService.delete(contestProblemId);
+        contestUserService.delete(contestUserId);
     }
 }

@@ -22,7 +22,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import com.goj.restservice.entity.Problem;
-import com.goj.restservice.exception.CustomException;
+import com.goj.restservice.form.ProblemForm;
 import com.goj.restservice.projection.ProblemSummary;
 import com.goj.restservice.service.ProblemService;
 
@@ -40,12 +40,15 @@ public class ProblemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@Valid @RequestBody Problem newProblem, HttpServletRequest request,
+    public void create(@Valid @RequestBody ProblemForm problemForm, HttpServletRequest request,
             HttpServletResponse response) {
-        newProblem.setProblemId(null);
-        Problem createdProblem = problemService.create(newProblem);
+        Problem newProblem = new Problem(problemForm.getTitle(), problemForm.getSource(), problemForm.getDescription(),
+                problemForm.getInput(), problemForm.getOutput(), problemForm.getSampleInput(),
+                problemForm.getSampleOutput(), problemForm.getHint(), problemForm.getTimeLimit(),
+                problemForm.getMemoryLimit());
+        Problem createProblem = problemService.create(newProblem);
         response.setHeader("Location",
-                request.getRequestURL().append("/").append(createdProblem.getProblemId()).toString());
+                request.getRequestURL().append("/").append(createProblem.getProblemId()).toString());
 
     }
 
@@ -65,11 +68,13 @@ public class ProblemController {
 
     @PutMapping("/{problemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable("problemId") Long problemId, @Valid @RequestBody Problem newProblem,
+    public void update(@PathVariable("problemId") Long problemId, @Valid @RequestBody ProblemForm problemForm,
             HttpServletRequest request, HttpServletResponse response) {
-        if (problemId != newProblem.getProblemId())
-            throw new CustomException("problemId doesn't match", HttpStatus.BAD_REQUEST);
-        util.checkResourceFound(problemService.readOne(problemId));
+        Problem newProblem = new Problem(problemForm.getTitle(), problemForm.getSource(), problemForm.getDescription(),
+                problemForm.getInput(), problemForm.getOutput(), problemForm.getSampleInput(),
+                problemForm.getSampleOutput(), problemForm.getHint(), problemForm.getTimeLimit(),
+                problemForm.getMemoryLimit());
+        newProblem.setProblemId(problemId);
         problemService.update(newProblem);
     }
 

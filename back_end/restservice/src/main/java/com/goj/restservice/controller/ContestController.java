@@ -3,7 +3,6 @@ package com.goj.restservice.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,9 +24,11 @@ import javax.validation.constraints.Min;
 
 import com.goj.restservice.entity.Contest;
 import com.goj.restservice.entity.User;
+import com.goj.restservice.exception.CustomException;
 import com.goj.restservice.form.ContestForm;
 import com.goj.restservice.projection.ContestDetail;
 import com.goj.restservice.projection.ContestSummary;
+import com.goj.restservice.repository.ContestUserRepository;
 import com.goj.restservice.service.ContestService;
 import com.goj.restservice.util.Util;
 
@@ -39,23 +40,17 @@ public class ContestController {
     private ContestService contestService;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    Util util;
 
     @Autowired
-    Util util;
+    ContestUserRepository contestUserRepository;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@Valid @RequestBody ContestForm contestForm, HttpServletRequest request,
             HttpServletResponse response, @AuthenticationPrincipal User user) {
         Contest newContest = new Contest(contestForm.getTitle(), contestForm.getDescription(),
-                contestForm.getStartTime(), contestForm.getEndTime());
-
-        if (contestForm.getPassword() != null) {
-            newContest.setPassword(passwordEncoder.encode(contestForm.getPassword()));
-        }
-
-        newContest.setCreateUser(user);
+                contestForm.getStartTime(), contestForm.getEndTime(), contestForm.getPassword());
 
         Contest createdContest = contestService.create(newContest);
         response.setHeader("Location",
@@ -71,9 +66,14 @@ public class ContestController {
     }
 
     @GetMapping("/{contestId}")
-    public @ResponseBody ContestDetail readOne(@PathVariable("contestId") Long contestId) {
+    public @ResponseBody ContestDetail readOne(@PathVariable("contestId") Long contestId,
+            @AuthenticationPrincipal User user) {
         ContestDetail contestDetail = contestService.readOne(contestId);
         util.checkResourceFound(contestDetail);
+
+        if (!contestUserRepository.existsByContestIdAndUserId(contestId, user.getUserId()))
+            throw new CustomException("User doesn't join the contest.", HttpStatus.BAD_REQUEST);
+
         return contestDetail;
     }
 
@@ -82,12 +82,8 @@ public class ContestController {
     public void update(@PathVariable("contestId") Long contestId, @Valid @RequestBody ContestForm contestForm,
             HttpServletRequest request, HttpServletResponse response) {
         Contest newContest = new Contest(contestForm.getTitle(), contestForm.getDescription(),
-                contestForm.getStartTime(), contestForm.getEndTime());
+                contestForm.getStartTime(), contestForm.getEndTime(), contestForm.getPassword());
 
-        if (contestForm.getPassword() != null) {
-            newContest.setPassword(passwordEncoder.encode(contestForm.getPassword()));
-        }
-        
         newContest.setContestId(contestId);
         contestService.update(newContest);
     }
