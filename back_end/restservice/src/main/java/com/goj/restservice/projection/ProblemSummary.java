@@ -5,5 +5,9 @@ public interface ProblemSummary {
 
     String getTitle();
 
+    Long getAccepted();
+
+    Long getSubmit();
+
     Integer getRatio();
 }
