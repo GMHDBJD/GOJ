@@ -22,8 +22,7 @@ public class ContestService {
     }
 
     public Iterable<ContestSummary> readAll(int page, int per_page) {
-        Page<ContestSummary> pageResult = contestRepository
-                .findAllContestSummaryBy(PageRequest.of(page, per_page));
+        Page<ContestSummary> pageResult = contestRepository.findAllContestSummaryBy(PageRequest.of(page, per_page));
         return pageResult.getContent();
     }
 
