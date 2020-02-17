@@ -21,10 +21,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
 
 import com.goj.restservice.entity.User;
 import com.goj.restservice.exception.CustomException;
+import com.goj.restservice.form.AddRoleForm;
+import com.goj.restservice.form.ResetNicknameForm;
 import com.goj.restservice.form.ResetPasswordForm;
 import com.goj.restservice.projection.UserDetail;
 import com.goj.restservice.projection.UserSummary;
@@ -78,8 +79,9 @@ public class UserController {
     @PostMapping("/{username}/reset_nickname")
     @ResponseStatus(HttpStatus.CREATED)
     public void resetNickname(@PathVariable("username") String username,
-            @RequestParam("newNickname") @Size(max = 15, message = "nickname length must be less than or equal to 15") String newNickname,
-            HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal User user) {
+            @Valid @RequestBody ResetNicknameForm resetNicknameForm, HttpServletRequest request,
+            HttpServletResponse response, @AuthenticationPrincipal User user) {
+        String newNickname = resetNicknameForm.getNewNickname();
         if (user.getUsername().equals(username))
             throw new CustomException("Method not allowed.", HttpStatus.METHOD_NOT_ALLOWED);
 
@@ -89,9 +91,10 @@ public class UserController {
 
     @PostMapping("/{username}/add_role")
     @ResponseStatus(HttpStatus.CREATED)
-    public void resetNickname(@PathVariable("username") String username,
-            @RequestParam("role") @Min(value = 0, message = "role should greater than or equal to 0") @Max(value = 1, message = "role should less than or equal to 1") Short role,
+    public void resetNickname(@PathVariable("username") String username, @Valid @RequestBody AddRoleForm addRoleForm,
             HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal User user) {
+
+        short role = addRoleForm.getRole();
 
         User updateUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException("User doesn't exist", HttpStatus.BAD_REQUEST));

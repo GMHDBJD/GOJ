@@ -35,7 +35,7 @@ public class ContestForm implements Serializable {
     @AssertTrue(message = "endTime should be after than startTime")
     public boolean isValid() {
         if (startTime == null || endTime == null)
-            return false;
+            return true;
         return endTime.isAfter(startTime);
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -51,10 +50,11 @@ public class AuthController {
     PasswordEncoder passwordEncoder;
 
     @PostMapping(path = "/signin")
-    public ResponseEntity<Map<Object, Object>> siginin(@RequestParam(name = "username") String username,
-            @RequestParam(name = "password") String password, HttpServletRequest request,
-            HttpServletResponse response) {
+    public ResponseEntity<Map<Object, Object>> siginin(@RequestBody Map<String, String> signinForm,
+            HttpServletRequest request, HttpServletResponse response) {
         try {
+            String username = signinForm.get("username");
+            String password = signinForm.get("password");
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             String token = jwtTokenProvider.createToken(username, userRepository.findByUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")).getRoles());

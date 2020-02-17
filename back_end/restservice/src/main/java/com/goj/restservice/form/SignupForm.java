@@ -36,6 +36,8 @@ public class SignupForm implements Serializable {
 
     @AssertTrue(message = "inconsistent password")
     public boolean isValid() {
+        if (password == null || confirmPassword == null)
+            return true;
         return password.equals(confirmPassword);
     }
 }

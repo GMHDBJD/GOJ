@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,12 +19,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 import com.goj.restservice.entity.ContestProblem;
 import com.goj.restservice.entity.Problem;
 import com.goj.restservice.entity.ContestProblemId;
 import com.goj.restservice.exception.CustomException;
+import com.goj.restservice.form.ContestProblemForm;
 import com.goj.restservice.projection.ProblemSummary;
 import com.goj.restservice.repository.ContestRepository;
 import com.goj.restservice.service.ContestProblemService;
@@ -50,8 +51,10 @@ public class ContestProblemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@PathVariable("contestId") Long contestId,
-            @Valid @RequestParam(name = "problemId") @Min(value = 1, message = "problemId must be greater than or equal to 1") @NotNull(message = "problemId could not be null") Long problemId,
-            HttpServletRequest request, HttpServletResponse response) {
+            @Valid @RequestBody ContestProblemForm contestProblemForm, HttpServletRequest request,
+            HttpServletResponse response) {
+
+        Long problemId = contestProblemForm.getProblemId();
 
         if (contestRepository.existsById(contestId))
             throw new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST);
