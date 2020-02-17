@@ -41,9 +41,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/v1/contests/*/users").authenticated()
                 .antMatchers(HttpMethod.GET, "/v1/problems/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/submissions").permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/submissions/**").authenticated()
-                .antMatchers(HttpMethod.GET, "/v1/users/**").authenticated()
-                .anyRequest().hasRole("admin").and()
+                .antMatchers("/v1/submissions/**").authenticated()
+                .antMatchers("/v1/users/**").authenticated()
+                .anyRequest().hasRole("ADMIN").and()
                 /*
                  * .antMatchers("/auth/signin").permitAll(). antMatchers(HttpMethod.GET,
                  * "/vehicles/**").permitAll() .antMatchers(HttpMethod.DELETE,

@@ -83,7 +83,7 @@ public class AuthController {
         User newUser = new User(signupForm.getUsername(), signupForm.getNickname(), signupForm.getEmail());
         newUser.setPassword(passwordEncoder.encode(signupForm.getPassword()));
 
-        newUser.setRoles(new ArrayList<String>(Arrays.asList("user")));
+        newUser.setRoles(new ArrayList<String>(Arrays.asList("ROLE_USER")));
 
         User createUser = userRepository.save(newUser);
         response.setHeader("Location", ServletUriComponentsBuilder.fromCurrentContextPath()

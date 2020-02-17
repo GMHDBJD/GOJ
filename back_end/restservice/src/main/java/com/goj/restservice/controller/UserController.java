@@ -100,7 +100,7 @@ public class UserController {
                 .orElseThrow(() -> new CustomException("User doesn't exist", HttpStatus.BAD_REQUEST));
         util.checkResourceFound(updateUser);
 
-        String[] array = { "admin", "gmh" };
+        String[] array = { "ROLE_ADMIN", "ROLE_GMH" };
 
         if (!user.getRoles().contains(array[role]))
             throw new CustomException("Method not allowed", HttpStatus.BAD_REQUEST);
