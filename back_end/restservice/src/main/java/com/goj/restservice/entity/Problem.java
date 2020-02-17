@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
-import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +19,7 @@ public class Problem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long problemId;
 
-    @Column(length = 200, nullable = false)
-    @NotNull(message = "title could not be null")
+    @Column(length = 255, nullable = false)
     private String title;
 
     @Column(length = 100)
@@ -64,4 +62,17 @@ public class Problem {
             createDate = LocalDate.now();
     }
 
+    public Problem(String title, String source, String description, String input, String output, String sampleInput,
+            String sampleOutput, String hint, Long timeLimit, Long memoryLimit) {
+        this.title = title;
+        this.source = source;
+        this.description = description;
+        this.input = input;
+        this.output = output;
+        this.sampleInput = sampleInput;
+        this.sampleOutput = sampleOutput;
+        this.hint = hint;
+        this.timeLimit = timeLimit;
+        this.memoryLimit = memoryLimit;
+    }
 }

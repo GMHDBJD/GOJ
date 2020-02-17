@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -23,17 +22,22 @@ public class Submission {
     @Column(unique = true, nullable = false)
     private Long submissionId;
 
-    @MapsId
     @OneToOne
-    @JoinColumn(name = "submission_id")
+    @JoinColumn(name = "submissionId", updatable = false, insertable = false, referencedColumnName = "submissionId")
     private SourceCode sourceCode;
 
-    @ManyToOne
-    @JoinColumn(name = "problem_id")
-    private Problem problem;
+    @Column(nullable = false)
+    private Long problemId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "problemId", updatable = false, insertable = false, referencedColumnName = "problemId")
+    private Problem problem;
+
+    @Column(nullable = false)
+    private Long userId;
+
+    @ManyToOne
+    @JoinColumn(name = "userId", updatable = false, insertable = false, referencedColumnName = "userId")
     private User user;
 
     private Long time;
@@ -52,12 +56,21 @@ public class Submission {
     @Column(length = 46)
     private String ip;
 
+    private Long contestId;
+
     @ManyToOne
-    @JoinColumn(name = "contest_id")
+    @JoinColumn(name = "contestId", updatable = false, insertable = false, referencedColumnName = "contestId")
     private Contest contest;
 
     private Long codeLength;
 
     private LocalDateTime judgeTime;
+
+    public Submission(Long submissionId, Long problemId, Short language, Long contestId) {
+        this.submissionId = submissionId;
+        this.problemId = problemId;
+        this.language = language;
+        this.contestId = contestId;
+    }
 
 }

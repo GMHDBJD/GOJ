@@ -21,4 +21,7 @@ public class SourceCode {
     @Column(nullable = false)
     private String code;
 
+    public SourceCode(String code) {
+        this.code = code;
+    }
 }

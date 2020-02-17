@@ -6,6 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -13,24 +14,23 @@ import lombok.RequiredArgsConstructor;
 @Data
 @Entity
 @RequiredArgsConstructor
-@IdClass(ContestProblemId.class)
-public class ContestProblem {
+@IdClass(ContestUserId.class)
+public class ContestUser {
     @Id
-    private Long problemId;
+    @NotNull(message = "userId could not be null")
+    private Long userId;
 
     @Id
+    @NotNull(message = "contestId could not be null")
     private Long contestId;
 
     @ManyToOne
-    @JoinColumn(name = "problemId", updatable = false, insertable = false, referencedColumnName = "problemId")
-    Problem problem;
+    @JoinColumn(name = "userId", updatable = false, insertable = false, referencedColumnName = "userId")
+    User user;
 
     @ManyToOne
     @JoinColumn(name = "contestId", updatable = false, insertable = false, referencedColumnName = "contestId")
     Contest contest;
-
-    @Column(length = 255, nullable = false)
-    private String title;
 
     @Column(nullable = false)
     private Long accepted = 0L;
@@ -41,9 +41,9 @@ public class ContestProblem {
     @Column(nullable = false)
     private Integer ratio = 0;
 
-    public ContestProblem(Long contestId, Long problemId, String title) {
+    public ContestUser(Long contestId, Long userId) {
+        this.userId = userId;
         this.contestId = contestId;
-        this.problemId = problemId;
-        this.title = title;
     }
+
 }

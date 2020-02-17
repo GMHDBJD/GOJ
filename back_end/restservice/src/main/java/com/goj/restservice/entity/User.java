@@ -7,7 +7,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
@@ -26,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
@@ -76,9 +74,6 @@ public class User implements UserDetails {
 
     @Column(length = 46)
     private String ip;
-
-    @ManyToMany(mappedBy = "users")
-    private Set<Contest> contests;
 
     public User(final String username, final String nickname, final String email) {
         this.username = username;
