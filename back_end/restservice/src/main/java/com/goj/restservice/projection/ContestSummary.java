@@ -7,7 +7,7 @@ public interface ContestSummary {
 
     String getTitle();
 
-    LocalDate StartTime();
+    LocalDate getStartTime();
 
     LocalDate getEndTime();
 }
