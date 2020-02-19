@@ -2,11 +2,15 @@ package com.goj.restservice.projection;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public interface SubmissionSummary {
     Long getSubmissionId();
 
+    @JsonProperty("problemId")
     Long getProblemProblemId();
 
+    @JsonProperty("username")
     String getUserUsername();
 
     Long getTime();

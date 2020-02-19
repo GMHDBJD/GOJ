@@ -53,7 +53,7 @@ public class SubmissionController {
         SourceCode createSourceCode = sourceCodeRepository.save(newSourceCode);
 
         Submission newSubmission = new Submission(createSourceCode.getSubmissionId(), submissionForm.getProblemId(),
-                submissionForm.getLanguage(), submissionForm.getContestId());
+                user.getUserId(), submissionForm.getLanguage(), submissionForm.getContestId());
         Submission createdSubmission = submissionService.create(newSubmission);
 
         response.setHeader("Location",

@@ -6,8 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-
-import org.springframework.data.annotation.CreatedDate;
+import javax.persistence.PrePersist;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +49,6 @@ public class Submission {
     private short language;
 
     @Column(nullable = false)
-    @CreatedDate
     private LocalDateTime submitDateTime;
 
     @Column(length = 46)
@@ -66,11 +64,18 @@ public class Submission {
 
     private LocalDateTime judgeTime;
 
-    public Submission(Long submissionId, Long problemId, Short language, Long contestId) {
+    public Submission(Long submissionId, Long problemId, Long userId, Short language, Long contestId) {
         this.submissionId = submissionId;
         this.problemId = problemId;
+        this.userId = userId;
         this.language = language;
         this.contestId = contestId;
+    }
+
+    @PrePersist
+    protected void prePersist() {
+        if (submitDateTime == null)
+            submitDateTime = LocalDateTime.now();
     }
 
 }

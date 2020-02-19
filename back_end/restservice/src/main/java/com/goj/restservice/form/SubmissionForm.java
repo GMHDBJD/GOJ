@@ -25,7 +25,8 @@ public class SubmissionForm implements Serializable {
 
     @Max(value = 10, message = "language should be less than or equal to 10")
     @Min(value = 1, message = "language should be greater than or equal to 1")
-    Short Language;
+    @NotNull(message = "language could not be null.")
+    Short language;
 
     Long contestId;
 }
