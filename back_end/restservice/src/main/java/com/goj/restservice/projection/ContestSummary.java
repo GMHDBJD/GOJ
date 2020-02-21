@@ -1,13 +1,18 @@
 package com.goj.restservice.projection;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.springframework.beans.factory.annotation.Value;
 
 public interface ContestSummary {
     Long getContestId();
 
     String getTitle();
 
-    LocalDate getStartTime();
+    LocalDateTime getStartTime();
 
-    LocalDate getEndTime();
+    LocalDateTime getEndTime();
+
+    @Value("#{target.password!=null}")
+    String getRequirePassword();
 }

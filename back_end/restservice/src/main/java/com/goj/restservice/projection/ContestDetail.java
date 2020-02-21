@@ -1,6 +1,6 @@
 package com.goj.restservice.projection;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,10 +11,10 @@ public interface ContestDetail {
 
     String getDescription();
 
-    LocalDate getStartTime();
+    LocalDateTime getStartTime();
 
-    LocalDate getEndTime();
+    LocalDateTime getEndTime();
 
-    @JsonProperty("username")
+    @JsonProperty("createUser")
     String getCreateUserUsername();
 }
