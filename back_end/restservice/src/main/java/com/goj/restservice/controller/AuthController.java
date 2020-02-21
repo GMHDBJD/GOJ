@@ -5,6 +5,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,12 +58,16 @@ public class AuthController {
             String username = signinForm.get("username");
             String password = signinForm.get("password");
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-            String token = jwtTokenProvider.createToken(username, userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")).getRoles());
+
+            List<String> roles = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")).getRoles();
+
+            String token = jwtTokenProvider.createToken(username, roles);
 
             Map<Object, Object> model = new HashMap<>();
             model.put("username", username);
             model.put("token", token);
+            model.put("roles", roles);
             return ok(model);
         } catch (Exception e) {
             throw new CustomException("Invalid username/password supplied", HttpStatus.NON_AUTHORITATIVE_INFORMATION);
@@ -88,5 +94,16 @@ public class AuthController {
         User createUser = userRepository.save(newUser);
         response.setHeader("Location", ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/users/{username}").buildAndExpand(createUser.getUsername()).toUri().toString());
+    }
+
+    @GetMapping("/validate_token")
+    @ResponseStatus(HttpStatus.OK)
+    public void validateToken(HttpServletRequest request, HttpServletResponse response) {
+        String token = jwtTokenProvider.resolveToken(request);
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            return;
+        } else {
+            throw new CustomException("Invalid token.", HttpStatus.BAD_REQUEST);
+        }
     }
 }

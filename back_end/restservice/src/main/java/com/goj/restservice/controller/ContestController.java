@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import com.goj.restservice.entity.Contest;
@@ -52,6 +51,7 @@ public class ContestController {
         Contest newContest = new Contest(contestForm.getTitle(), contestForm.getDescription(),
                 contestForm.getStartTime(), contestForm.getEndTime(), contestForm.getPassword());
 
+        newContest.setCreateUser(user);
         Contest createdContest = contestService.create(newContest);
         response.setHeader("Location",
                 request.getRequestURL().append("/").append(createdContest.getContestId()).toString());
@@ -61,7 +61,7 @@ public class ContestController {
     @GetMapping
     public @ResponseBody Iterable<ContestSummary> readAll(
             @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
-            @RequestParam(value = "per_page", defaultValue = "30") @Min(value = 1, message = "per_page must be greater than or equal to 1") @Max(value = 100, message = "per_page must be less than or equal to 100") int per_page) {
+            @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page) {
         return contestService.readAll(page - 1, per_page);
     }
 
@@ -70,6 +70,9 @@ public class ContestController {
             @AuthenticationPrincipal User user) {
         ContestDetail contestDetail = contestService.readOne(contestId);
         util.checkResourceFound(contestDetail);
+
+        if (contestDetail.getCreateUserUsername().equals(user.getUsername()) || user.getRoles().contains("ROLE_GMH"))
+            return contestDetail;
 
         if (!contestUserRepository.existsByContestIdAndUserId(contestId, user.getUserId()))
             throw new CustomException("User doesn't join the contest.", HttpStatus.BAD_REQUEST);
@@ -80,10 +83,11 @@ public class ContestController {
     @PutMapping("/{contestId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("contestId") Long contestId, @Valid @RequestBody ContestForm contestForm,
-            HttpServletRequest request, HttpServletResponse response) {
+            HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal User user) {
         Contest newContest = new Contest(contestForm.getTitle(), contestForm.getDescription(),
                 contestForm.getStartTime(), contestForm.getEndTime(), contestForm.getPassword());
 
+        newContest.setCreateUser(user);
         newContest.setContestId(contestId);
         contestService.update(newContest);
     }

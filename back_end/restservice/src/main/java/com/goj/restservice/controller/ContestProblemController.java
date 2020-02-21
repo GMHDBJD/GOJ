@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import com.goj.restservice.entity.ContestProblem;
@@ -56,7 +55,7 @@ public class ContestProblemController {
 
         Long problemId = contestProblemForm.getProblemId();
 
-        if (contestRepository.existsById(contestId))
+        if (!contestRepository.existsById(contestId))
             throw new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST);
 
         Problem problem = problemService.readOne(problemId);
@@ -73,9 +72,9 @@ public class ContestProblemController {
     @GetMapping
     public @ResponseBody Iterable<ProblemSummary> readAll(@PathVariable("contestId") Long contestId,
             @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
-            @RequestParam(value = "per_page", defaultValue = "30") @Min(value = 1, message = "per_page must be greater than or equal to 1") @Max(value = 100, message = "per_page must be less than or equal to 100") int per_page) {
+            @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page) {
 
-        if (contestRepository.existsById(contestId))
+        if (!contestRepository.existsById(contestId))
             throw new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST);
 
         return contestProblemService.readAll(contestId, page - 1, per_page);
@@ -86,10 +85,10 @@ public class ContestProblemController {
     public void delete(@PathVariable("contestId") Long contestId, @PathVariable("problemId") Long problemId,
             HttpServletRequest request, HttpServletResponse response) {
 
-        if (contestRepository.existsById(contestId))
+        if (!contestRepository.existsById(contestId))
             throw new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST);
 
-        ContestProblemId contestProblemId = new ContestProblemId(problemId, contestId);
+        ContestProblemId contestProblemId = new ContestProblemId(contestId, problemId);
 
         contestProblemService.delete(contestProblemId);
     }

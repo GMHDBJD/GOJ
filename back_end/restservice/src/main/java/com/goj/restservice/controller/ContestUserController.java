@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -74,9 +73,9 @@ public class ContestUserController {
     @GetMapping
     public @ResponseBody Iterable<UserSummary> readAll(@PathVariable("contestId") Long contestId,
             @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
-            @RequestParam(value = "per_page", defaultValue = "30") @Min(value = 1, message = "per_page must be greater than or equal to 1") @Max(value = 100, message = "per_page must be less than or equal to 100") int per_page) {
+            @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page) {
 
-        if (contestRepository.existsById(contestId))
+        if (!contestRepository.existsById(contestId))
             throw new CustomException("Contest doesn't match.", HttpStatus.BAD_REQUEST);
 
         return contestUserService.readAll(contestId, page - 1, per_page);
@@ -87,7 +86,7 @@ public class ContestUserController {
     public void delete(@PathVariable("contestId") Long contestId, @PathVariable("userId") Long userId,
             HttpServletRequest request, HttpServletResponse response) {
 
-        if (contestRepository.existsById(contestId))
+        if (!contestRepository.existsById(contestId))
             throw new CustomException("Contest doesn't match.", HttpStatus.BAD_REQUEST);
 
         ContestUserId contestUserId = new ContestUserId(userId, contestId);
