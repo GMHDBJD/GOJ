@@ -1,5 +1,5 @@
 <template>
-  <div id="queue_list" style="height:100vh;">
+  <div id="queue_list">
     <v-list>
       <v-list-item two-line>
         <v-list-item-content>

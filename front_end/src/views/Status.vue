@@ -1,5 +1,5 @@
 <template>
-  <div id="status">
+  <div id="statu">
     <v-card>
       <StatusList></StatusList>
     </v-card>
@@ -10,7 +10,7 @@
 import StatusList from '@/components/status_list.vue'
 
 export default {
-  name: 'status',
+  name: 'statu',
   components: {
     StatusList
   }

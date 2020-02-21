@@ -1,7 +1,7 @@
 <template>
   <v-app id="app">
     <v-app-bar app dark hide-on-scroll color="primary">
-      <v-menu bottom offset-y v-if="is_mobile">
+      <v-menu bottom offset-y v-if="this.$store.state.isMobile">
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
             <v-icon>mdi-menu</v-icon>
@@ -11,20 +11,17 @@
           <v-list-item to="/">
             <v-list-item-title>GOJ</v-list-item-title>
           </v-list-item>
-          <v-list-item to="/problem">
+          <v-list-item to="/problems">
             <v-list-item-title>Problem</v-list-item-title>
           </v-list-item>
-          <v-list-item to="/contest">
+          <v-list-item to="/contests">
             <v-list-item-title>Contest</v-list-item-title>
           </v-list-item>
-          <v-list-item to="/status">
+          <v-list-item to="/statu">
             <v-list-item-title>Status</v-list-item-title>
           </v-list-item>
           <v-list-item to="/ranking">
             <v-list-item-title>Ranking</v-list-item-title>
-          </v-list-item>
-          <v-list-item to="/discuss">
-            <v-list-item-title>Discuss</v-list-item-title>
           </v-list-item>
           <v-list-item to="/queue">
             <v-list-item-title>Queue</v-list-item-title>
@@ -33,19 +30,40 @@
       </v-menu>
       <router-link to="/" tag="h2">GOJ</router-link>
       <v-divider vertical class="ml-4"></v-divider>
-      <v-toolbar-items v-if="!is_mobile">
-        <v-btn text to="/problem">Problem</v-btn>
-        <v-btn text to="/contest">Contest</v-btn>
-        <v-btn text to="/status">Status</v-btn>
+      <v-toolbar-items v-if="!this.$store.state.isMobile">
+        <v-btn text to="/problems">Problem</v-btn>
+        <v-btn text to="/contests">Contest</v-btn>
+        <v-btn text to="/statu">Status</v-btn>
         <v-btn text to="/ranking">Ranking</v-btn>
-        <v-btn text to="/discuss">Discuss</v-btn>
         <v-btn text to="/queue">Queue</v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>
 
-      <v-btn class="ma-2" dark outlined @click.stop="dialog_login = true">
+      <v-btn
+        class="ma-2"
+        dark
+        outlined
+        @click.stop="dialog_login = true"
+        v-if="!this.$store.state.isLogin"
+      >
         <v-icon dark left>mdi-account</v-icon>Login
       </v-btn>
+      <v-menu bottom offset-y v-else>
+        <template v-slot:activator="{ on }">
+          <v-btn class="ma-2" dark outlined v-on="on">
+            <v-icon dark left>mdi-account</v-icon>
+            {{ username }}
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item :to="'user/' + username">
+            <v-list-item-title>profile</v-list-item-title>
+          </v-list-item>
+          <v-list-item to="/" @click="logout">
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
 
     <v-content app>
@@ -93,8 +111,12 @@ export default {
   data() {
     return {
       dialog_login: false,
-      is_mobile: false,
       menu: false
+    }
+  },
+  computed: {
+    username() {
+      return this.$store.state.username
     }
   },
   beforeDestroy() {
@@ -108,7 +130,10 @@ export default {
   },
   methods: {
     onResize() {
-      this.is_mobile = window.innerWidth < 850
+      this.$store.commit('resize', window.innerWidth)
+    },
+    logout() {
+      this.$store.commit('logout')
     }
   }
 }

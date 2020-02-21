@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import Problems from '../views/Problems.vue'
 import Problem from '../views/Problem.vue'
+import Contests from '../views/Contests.vue'
 import Contest from '../views/Contest.vue'
 import Status from '../views/Status.vue'
 import Ranking from '../views/Ranking.vue'
 import Queue from '../views/Queue.vue'
-import Discuss from '../views/Discuss.vue'
 
 Vue.use(VueRouter)
 
@@ -20,18 +21,18 @@ const routes = [
     }
   },
   {
-    path: '/problem',
-    name: 'problem',
-    component: Problem
+    path: '/problems',
+    name: 'problems',
+    component: Problems
   },
   {
-    path: '/contest',
-    name: 'contest',
-    component: Contest
+    path: '/contests',
+    name: 'contests',
+    component: Contests
   },
   {
-    path: '/status',
-    name: 'status',
+    path: '/statu',
+    name: 'statu',
     component: Status
   },
   {
@@ -45,9 +46,22 @@ const routes = [
     component: Queue
   },
   {
-    path: '/discuss',
-    name: 'discuss',
-    component: Discuss
+    path: '/problems/:problemId',
+    name: 'problemDetail',
+    component: Problem
+  },
+  {
+    path: '/contests/:contestId',
+    name: 'contestDetail',
+    component: Contest
+  },
+  {
+    path: '/contests/:contestId/problems/:problemId',
+    name: 'ContestProblem',
+    component: Problem,
+    meta: {
+      isContest: true
+    }
   }
 ]
 

@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-    <v-row>
+    <v-row v-if="this.$store.state.isLogin">
       <v-col cols="12" md="auto" sm="auto">
         <v-card>
           <v-card-title>
@@ -38,6 +38,40 @@
         </v-card>
       </v-col>
     </v-row>
+    <div v-else>
+      <v-row>
+        <v-col>
+          <v-card min-height="40vh" to="/problems">
+            <v-card-title>
+              problem
+            </v-card-title>
+          </v-card>
+        </v-col>
+        <v-col>
+          <v-card min-height="40vh" to="/contests">
+            <v-card-title>
+              contest
+            </v-card-title>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-card min-height="40vh" to="statu">
+            <v-card-title>
+              status
+            </v-card-title>
+          </v-card>
+        </v-col>
+        <v-col>
+          <v-card min-height="40vh" to="ranking">
+            <v-card-title>
+              ranking
+            </v-card-title>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 
