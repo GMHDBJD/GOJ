@@ -74,5 +74,6 @@ public class Problem {
         this.hint = hint;
         this.timeLimit = timeLimit;
         this.memoryLimit = memoryLimit;
+        this.createDate = LocalDate.now();
     }
 }
