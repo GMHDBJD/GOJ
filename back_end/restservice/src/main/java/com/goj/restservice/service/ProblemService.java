@@ -7,7 +7,6 @@ import com.goj.restservice.projection.ProblemSummary;
 import com.goj.restservice.repository.ProblemRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +20,7 @@ public class ProblemService {
     }
 
     public Iterable<ProblemSummary> readAll(int page, int per_page) {
-        Page<ProblemSummary> pageResult = problemRepository
-                .findAllProblemSummaryBy(PageRequest.of(page, per_page));
-        return pageResult.getContent();
+        return problemRepository.findAllProblemSummaryBy(PageRequest.of(page, per_page));
     }
 
     public Problem readOne(Long problemId) {

@@ -8,8 +8,8 @@ import com.goj.restservice.projection.UserSummary;
 import com.goj.restservice.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,8 +22,7 @@ public class UserService {
     }
 
     public Iterable<UserSummary> readAll(int page, int per_page) {
-        Page<UserSummary> pageResult = userRepository.findAllUserSummaryBy(PageRequest.of(page, per_page));
-        return pageResult.getContent();
+        return userRepository.findAllUserSummaryBy(PageRequest.of(page, per_page, Sort.by("accepted").descending()));
     }
 
     public UserDetail readOne(String username) {

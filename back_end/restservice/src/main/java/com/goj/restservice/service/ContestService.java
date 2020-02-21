@@ -8,7 +8,6 @@ import com.goj.restservice.projection.ContestSummary;
 import com.goj.restservice.repository.ContestRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +21,7 @@ public class ContestService {
     }
 
     public Iterable<ContestSummary> readAll(int page, int per_page) {
-        Page<ContestSummary> pageResult = contestRepository.findAllContestSummaryBy(PageRequest.of(page, per_page));
-        return pageResult.getContent();
+        return contestRepository.findAllContestSummaryBy(PageRequest.of(page, per_page));
     }
 
     public ContestDetail readOne(Long contestId) {

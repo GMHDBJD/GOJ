@@ -8,7 +8,6 @@ import com.goj.restservice.projection.SubmissionSummary;
 import com.goj.restservice.repository.SubmissionRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +21,7 @@ public class SubmissionService {
     }
 
     public Iterable<SubmissionSummary> readAll(int page, int per_page) {
-        Page<SubmissionSummary> pageResult = submissionRepository
-                .findAllSubmissionSummaryBy(PageRequest.of(page, per_page));
-        return pageResult.getContent();
+        return submissionRepository.findAllSubmissionSummaryBy(PageRequest.of(page, per_page));
     }
 
     public SubmissionDetail readOne(Long submissionId) {
