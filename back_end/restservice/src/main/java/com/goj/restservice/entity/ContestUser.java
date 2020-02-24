@@ -1,12 +1,12 @@
 package com.goj.restservice.entity;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import javax.persistence.MapsId;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -14,23 +14,19 @@ import lombok.RequiredArgsConstructor;
 @Data
 @Entity
 @RequiredArgsConstructor
-@IdClass(ContestUserId.class)
 public class ContestUser {
-    @Id
-    @NotNull(message = "userId could not be null")
-    private Long userId;
+    @EmbeddedId
+    ContestUserKey contestUserKey;
 
-    @Id
-    @NotNull(message = "contestId could not be null")
-    private Long contestId;
-
-    @ManyToOne
-    @JoinColumn(name = "userId", updatable = false, insertable = false, referencedColumnName = "userId")
-    User user;
-
-    @ManyToOne
-    @JoinColumn(name = "contestId", updatable = false, insertable = false, referencedColumnName = "contestId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("contestId")
+    @JoinColumn(name = "contest_id", nullable = false)
     Contest contest;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("userId")
+    @JoinColumn(name = "user_id", nullable = false)
+    User user;
 
     @Column(nullable = false)
     private Long accepted = 0L;
@@ -41,9 +37,9 @@ public class ContestUser {
     @Column(nullable = false)
     private Long solved = 0L;
 
-    public ContestUser(Long contestId, Long userId) {
-        this.userId = userId;
-        this.contestId = contestId;
+    public ContestUser(ContestUserKey contestUserKey, Contest contest, User user) {
+        this.contestUserKey = contestUserKey;
+        this.contest = contest;
+        this.user = user;
     }
-
 }

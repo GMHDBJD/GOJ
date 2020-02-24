@@ -6,6 +6,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Optional;
 
+import com.goj.restservice.entity.Contest;
 import com.goj.restservice.entity.Submission;
 import com.goj.restservice.projection.SubmissionDetail;
 import com.goj.restservice.projection.SubmissionSummary;
@@ -16,7 +17,7 @@ import com.goj.restservice.projection.SubmissionSummary;
 public interface SubmissionRepository extends PagingAndSortingRepository<Submission, Long> {
     Page<SubmissionSummary> findAllSubmissionSummaryBy(Pageable pageable);
 
-    Page<SubmissionSummary> findAllSubmissionSummaryByContestId(Long contestId, Pageable pageable);
+    Page<SubmissionSummary> findAllSubmissionSummaryByContest(Contest contest, Pageable pageable);
 
     Optional<SubmissionDetail> findSubmissionDetailBySubmissionId(Long submissionId);
 }

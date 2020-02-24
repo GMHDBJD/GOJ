@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -18,7 +19,7 @@ public class SignupForm implements Serializable {
     private static final long serialVersionUID = -6986746375915710855L;
 
     @Size(max = 15, min = 1, message = "username length should between 1 and 15")
-    @NotNull(message = "username could not be null")
+    @NotBlank(message = "username could not be blank")
     private String username;
 
     @Size(max = 15, min = 5, message = "password length should between 5 and 15")
@@ -30,7 +31,7 @@ public class SignupForm implements Serializable {
     @Size(max = 15, message = "nickname length must be less than or equal to 15")
     private String nickname;
 
-    @Email(message = "invalid message")
+    @Email(message = "invalid email")
     @NotNull(message = "email could not be null")
     private String email;
 

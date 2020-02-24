@@ -1,11 +1,12 @@
 package com.goj.restservice.entity;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -13,21 +14,19 @@ import lombok.RequiredArgsConstructor;
 @Data
 @Entity
 @RequiredArgsConstructor
-@IdClass(ContestProblemId.class)
 public class ContestProblem {
-    @Id
-    private Long problemId;
+    @EmbeddedId
+    ContestProblemKey contestProblemKey;
 
-    @Id
-    private Long contestId;
-
-    @ManyToOne
-    @JoinColumn(name = "problemId", updatable = false, insertable = false, referencedColumnName = "problemId")
-    Problem problem;
-
-    @ManyToOne
-    @JoinColumn(name = "contestId", updatable = false, insertable = false, referencedColumnName = "contestId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("contestId")
+    @JoinColumn(name = "contest_id", nullable = false)
     Contest contest;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("problemId")
+    @JoinColumn(name = "problem_id", nullable = false)
+    Problem problem;
 
     @Column(length = 255, nullable = false)
     private String title;
@@ -41,9 +40,10 @@ public class ContestProblem {
     @Column(nullable = false)
     private Long solved = 0L;
 
-    public ContestProblem(Long contestId, Long problemId, String title) {
-        this.contestId = contestId;
-        this.problemId = problemId;
+    public ContestProblem(ContestProblemKey contestProblemKey, Contest contest, Problem problem, String title) {
+        this.contestProblemKey = contestProblemKey;
+        this.contest = contest;
+        this.problem = problem;
         this.title = title;
     }
 }

@@ -2,7 +2,7 @@ package com.goj.restservice.security;
 
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +38,7 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String username, List<String> roles) {
+    public String createToken(String username, Set<String> roles) {
 
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);

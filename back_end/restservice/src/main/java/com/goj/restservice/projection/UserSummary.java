@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 
 public interface UserSummary {
 
+    Long getUserId();
+
     String getUsername();
 
     String getNickname();
@@ -17,5 +19,4 @@ public interface UserSummary {
 
     Long getSolved();
 
-    Long getRank();
-}
+ }

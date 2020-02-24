@@ -3,7 +3,6 @@ package com.goj.restservice.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,11 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,8 +56,7 @@ public class AuthController {
             String password = signinForm.get("password");
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
-            List<String> roles = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")).getRoles();
+            Set<String> roles = userRepository.findByUsername(username).get().getRoles();
 
             String token = jwtTokenProvider.createToken(username, roles);
 
@@ -70,7 +66,7 @@ public class AuthController {
             model.put("roles", roles);
             return ok(model);
         } catch (Exception e) {
-            throw new CustomException("Invalid username/password supplied", HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+            throw new CustomException("Invalid username/password supplied", HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -79,21 +75,19 @@ public class AuthController {
     public void siginup(@Valid @RequestBody SignupForm signupForm, HttpServletRequest request,
             HttpServletResponse response) {
         if (userRepository.existsByUsername(signupForm.getUsername())) {
-            throw new CustomException("Username is already taken!", HttpStatus.BAD_REQUEST);
+            throw new CustomException("Username is already taken!", HttpStatus.CONFLICT);
         }
 
         if (userRepository.existsByEmail(signupForm.getEmail())) {
-            throw new CustomException("Email Address already in use!", HttpStatus.BAD_REQUEST);
+            throw new CustomException("Email Address already in use!", HttpStatus.CONFLICT);
         }
 
-        User newUser = new User(signupForm.getUsername(), signupForm.getNickname(), signupForm.getEmail());
-        newUser.setPassword(passwordEncoder.encode(signupForm.getPassword()));
+        User newUser = new User(signupForm.getUsername(), signupForm.getNickname(), signupForm.getEmail(),
+                passwordEncoder.encode(signupForm.getPassword()));
 
-        newUser.setRoles(new ArrayList<String>(Arrays.asList("ROLE_USER")));
-
-        User createUser = userRepository.save(newUser);
+        userRepository.save(newUser);
         response.setHeader("Location", ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/users/{username}").buildAndExpand(createUser.getUsername()).toUri().toString());
+                .path("/api/users/{username}").buildAndExpand(signupForm.getUsername()).toUri().toString());
     }
 
     @GetMapping("/validate_token")
@@ -103,7 +97,7 @@ public class AuthController {
         if (token != null && jwtTokenProvider.validateToken(token)) {
             return;
         } else {
-            throw new CustomException("Invalid token.", HttpStatus.BAD_REQUEST);
+            throw new CustomException("Invalid token.", HttpStatus.UNAUTHORIZED);
         }
     }
 }

@@ -3,23 +3,29 @@ package com.goj.restservice.entity;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
+
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
 @RequiredArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Contest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,15 +40,35 @@ public class Contest {
 
     private LocalDateTime endTime;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contest")
-    private List<ContestProblem> contestProblem;
+    @CreatedDate
+    @Column(nullable = false)
+    private LocalDate createDate;
 
-    @ManyToOne
-    @NotNull
-    private User createUser;
+    @LastModifiedDate
+    @Column(nullable = false)
+    private LocalDate lastModifiedDate;
+
+    @CreatedBy
+    private String createUser;
+
+    @LastModifiedBy
+    private String lastModifiedUser;
 
     @Column(length = 100)
     private String password;
+
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ContestProblem> contestProblemSet;
+
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ContestUser> contestUserSet;
+
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Submission> contestSet;
+
+    public Contest(String title, String description, LocalDateTime startTime, LocalDateTime endTime, String password) {
+        this.update(title, description, startTime, endTime, password);
+    }
 
     public void update(String title, String description, LocalDateTime startTime, LocalDateTime endTime,
             String password) {

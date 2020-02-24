@@ -6,7 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 import com.goj.restservice.entity.Problem;
+import com.goj.restservice.projection.ProblemDetail;
 import com.goj.restservice.projection.ProblemSummary;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
@@ -19,4 +22,6 @@ public interface ProblemRepository extends PagingAndSortingRepository<Problem, L
 
     @Query(nativeQuery = true, value = "SELECT problem_id as problemId, title, accepted, submit, 0 AS solved FROM problem p")
     Page<ProblemSummary> findAllProblemSummaryBy(Pageable pageable);
+
+    Optional<ProblemDetail> findProblemDetailByProblemId(Long problemId);
 }

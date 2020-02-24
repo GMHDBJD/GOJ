@@ -1,11 +1,11 @@
 package com.goj.restservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,15 +29,11 @@ import com.goj.restservice.form.ResetPasswordForm;
 import com.goj.restservice.projection.UserDetail;
 import com.goj.restservice.projection.UserSummary;
 import com.goj.restservice.repository.UserRepository;
-import com.goj.restservice.service.UserService;
-import com.goj.restservice.util.Util;
 
 @RestController
 @RequestMapping(path = "/v1/users")
 @Validated
 public class UserController {
-    @Autowired
-    private UserService userService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -45,21 +41,17 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    Util util;
-
     @GetMapping
     public @ResponseBody Iterable<UserSummary> readAll(
             @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
             @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page) {
-        return userService.readAll(page - 1, per_page);
+        return userRepository.findAllUserSummaryBy(PageRequest.of(page - 1, per_page));
     }
 
     @GetMapping("/{username}")
     public @ResponseBody UserDetail readOne(@PathVariable("username") String username) {
-        UserDetail userDetail = userService.readOne(username);
-        util.checkResourceFound(userDetail);
-        return userDetail;
+        return userRepository.findUserDetailByUsername(username)
+                .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/{username}/reset_password")
@@ -67,12 +59,13 @@ public class UserController {
     public void resetPassword(@PathVariable("username") String username,
             @Valid @RequestBody ResetPasswordForm resetPasswordForm, HttpServletRequest request,
             HttpServletResponse response, @AuthenticationPrincipal User user) {
+
         if (!user.getUsername().equals(username))
             throw new CustomException("Method not allowed.", HttpStatus.METHOD_NOT_ALLOWED);
 
         user.setPassword(passwordEncoder.encode(resetPasswordForm.getNewPassword()));
 
-        userService.update(user);
+        userRepository.save(user);
     }
 
     @PostMapping("/{username}/reset_nickname")
@@ -80,12 +73,12 @@ public class UserController {
     public void resetNickname(@PathVariable("username") String username,
             @Valid @RequestBody ResetNicknameForm resetNicknameForm, HttpServletRequest request,
             HttpServletResponse response, @AuthenticationPrincipal User user) {
-        String newNickname = resetNicknameForm.getNewNickname();
         if (!user.getUsername().equals(username))
             throw new CustomException("Method not allowed.", HttpStatus.METHOD_NOT_ALLOWED);
 
-        user.setNickname(newNickname);
-        userService.update(user);
+        user.setNickname(resetNicknameForm.getNewNickname());
+
+        userRepository.save(user);
     }
 
     @PostMapping("/{username}/add_role")
@@ -96,27 +89,16 @@ public class UserController {
         short role = addRoleForm.getRole();
 
         User updateUser = userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException("User doesn't exist", HttpStatus.BAD_REQUEST));
-        util.checkResourceFound(updateUser);
+                .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
 
         String[] array = { "ROLE_ADMIN", "ROLE_GMH" };
 
         if (!user.getRoles().contains(array[role]))
-            throw new CustomException("Method not allowed", HttpStatus.BAD_REQUEST);
+            throw new CustomException("Method not allowed", HttpStatus.METHOD_NOT_ALLOWED);
 
         if (!updateUser.getRoles().contains(array[role])) {
             updateUser.getRoles().add(array[role]);
-            userService.update(updateUser);
+            userRepository.save(updateUser);
         }
-    }
-
-    @DeleteMapping("/{username}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("username") String username, HttpServletRequest request,
-            HttpServletResponse response, @AuthenticationPrincipal User user) {
-        if (user.getUsername() != username)
-            throw new CustomException("Method not allowed.", HttpStatus.METHOD_NOT_ALLOWED);
-
-        userService.delete(username);
     }
 }

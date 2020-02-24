@@ -14,7 +14,10 @@ import com.goj.restservice.projection.UserSummary;
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
 
-public interface UserRepository extends PagingAndSortingRepository<User, Integer> {
+public interface UserRepository extends PagingAndSortingRepository<User, Long> {
+    @Query(nativeQuery = true, value = "SELECT username, nickname, submit, accepted, solved, @curRank\\:=@curRank + 1 AS rank FROM user u, (SELECT @curRank\\:=0) r ORDER BY solved DESC")
+    Page<UserSummary> findAllUserSummaryBy(Pageable pageable);
+
     Optional<User> findByUsername(String username);
 
     @Query(nativeQuery = true, value = "SELECT username, nickname, email, register_time as registerTime, submit, accepted, solved, @curRank\\:=@curRank + 1 AS rank FROM user u, (SELECT @curRank\\:=0) r WHERE username = ?1 ORDER BY accepted DESC")
@@ -23,9 +26,4 @@ public interface UserRepository extends PagingAndSortingRepository<User, Integer
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
-
-    @Query(nativeQuery = true, value = "SELECT username, nickname, submit, accepted, solved, @curRank\\:=@curRank + 1 AS rank FROM user u, (SELECT @curRank\\:=0) r ORDER BY solved DESC")
-    Page<UserSummary> findAllUserSummaryBy(Pageable pageable);
-
-    void deleteByUsername(String username);
 }

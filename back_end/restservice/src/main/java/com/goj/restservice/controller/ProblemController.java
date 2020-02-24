@@ -26,38 +26,29 @@ import com.goj.restservice.entity.Problem;
 import com.goj.restservice.entity.User;
 import com.goj.restservice.exception.CustomException;
 import com.goj.restservice.form.ProblemForm;
+import com.goj.restservice.projection.ProblemDetail;
 import com.goj.restservice.projection.ProblemSummary;
 import com.goj.restservice.repository.ProblemRepository;
-import com.goj.restservice.service.ProblemService;
-
-import com.goj.restservice.util.Util;
 
 @RestController
 @RequestMapping(path = "/v1/problems")
 @Validated
 public class ProblemController {
-    @Autowired
-    private ProblemService problemService;
 
     @Autowired
     private ProblemRepository problemRepository;
-
-    @Autowired
-    Util util;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@Valid @RequestBody ProblemForm problemForm, HttpServletRequest request,
             HttpServletResponse response, @AuthenticationPrincipal User user) {
 
-        Problem newProblem = new Problem();
-        newProblem.update(problemForm.getTitle(), problemForm.getSource(), problemForm.getDescription(),
+        Problem newProblem = new Problem(problemForm.getTitle(), problemForm.getSource(), problemForm.getDescription(),
                 problemForm.getInput(), problemForm.getOutput(), problemForm.getSampleInput(),
                 problemForm.getSampleOutput(), problemForm.getHint(), problemForm.getTimeLimit(),
                 problemForm.getMemoryLimit());
-        newProblem.setCreateUser(user);
 
-        Problem createProblem = problemService.create(newProblem);
+        Problem createProblem = problemRepository.save(newProblem);
         response.setHeader("Location",
                 request.getRequestURL().append("/").append(createProblem.getProblemId()).toString());
 
@@ -69,7 +60,7 @@ public class ProblemController {
             @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page,
             @AuthenticationPrincipal User user) {
         if (user == null)
-            return problemService.readAll(page - 1, per_page);
+            return problemRepository.findAllProblemSummaryBy(PageRequest.of(page - 1, per_page));
         else {
             return problemRepository.findAllProblemSummaryByUserId(user.getUserId(),
                     PageRequest.of(page - 1, per_page));
@@ -77,10 +68,9 @@ public class ProblemController {
     }
 
     @GetMapping("/{problemId}")
-    public @ResponseBody Problem readOne(@PathVariable("problemId") Long problemId) {
-        Problem problem = problemService.readOne(problemId);
-        util.checkResourceFound(problem);
-        return problem;
+    public @ResponseBody ProblemDetail readOne(@PathVariable("problemId") Long problemId) {
+        return problemRepository.findProblemDetailByProblemId(problemId)
+                .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{problemId}")
@@ -88,36 +78,27 @@ public class ProblemController {
     public void update(@PathVariable("problemId") Long problemId, @Valid @RequestBody ProblemForm problemForm,
             HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal User user) {
 
-        Problem problem = problemService.readOne(problemId);
+        Problem problem = problemRepository.findById(problemId).orElse(null);
+
         if (problem == null) {
-            problem = new Problem();
-        } else if (problem.getCreateUser().getUserId() != user.getUserId() && !user.getRoles().contains("ROLE_GMH")) {
-            throw new CustomException("method not allowed", HttpStatus.BAD_REQUEST);
+            problem = new Problem(problemForm.getTitle(), problemForm.getSource(), problemForm.getDescription(),
+                    problemForm.getInput(), problemForm.getOutput(), problemForm.getSampleInput(),
+                    problemForm.getSampleOutput(), problemForm.getHint(), problemForm.getTimeLimit(),
+                    problemForm.getMemoryLimit());
+            problem.setProblemId(problemId);
+        } else {
+            problem.update(problemForm.getTitle(), problemForm.getSource(), problemForm.getDescription(),
+                    problemForm.getInput(), problemForm.getOutput(), problemForm.getSampleInput(),
+                    problemForm.getSampleOutput(), problemForm.getHint(), problemForm.getTimeLimit(),
+                    problemForm.getMemoryLimit());
         }
-
-        problem.update(problemForm.getTitle(), problemForm.getSource(), problemForm.getDescription(),
-                problemForm.getInput(), problemForm.getOutput(), problemForm.getSampleInput(),
-                problemForm.getSampleOutput(), problemForm.getHint(), problemForm.getTimeLimit(),
-                problemForm.getMemoryLimit());
-
-        problem.setProblemId(problemId);
-
-        problemService.update(problem);
+        problemRepository.save(problem);
     }
 
     @DeleteMapping("/{problemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("problemId") Long problemId, HttpServletRequest request,
             HttpServletResponse response, @AuthenticationPrincipal User user) {
-
-        Problem problem = problemService.readOne(problemId);
-        if (problem == null)
-            return;
-
-        if (problem.getCreateUser().getUserId() != user.getUserId() && !user.getRoles().contains("ROLE_GMH")) {
-            throw new CustomException("method not allowed", HttpStatus.BAD_REQUEST);
-        }
-
-        problemService.delete(problemId);
+        problemRepository.deleteById(problemId);
     }
 }

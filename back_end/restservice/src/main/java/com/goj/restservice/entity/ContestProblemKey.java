@@ -6,14 +6,16 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+import javax.persistence.Embeddable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContestUserId implements Serializable {
-
-    private static final long serialVersionUID = 7453238872112055257L;
+@Embeddable
+public class ContestProblemKey implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     Long contestId;
 
-    Long userId;
+    Long problemId;
 }

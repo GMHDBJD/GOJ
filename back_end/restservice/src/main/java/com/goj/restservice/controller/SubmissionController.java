@@ -1,6 +1,7 @@
 package com.goj.restservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
 import com.goj.restservice.entity.Contest;
+import com.goj.restservice.entity.ContestProblem;
+import com.goj.restservice.entity.ContestProblemKey;
 import com.goj.restservice.entity.Problem;
 import com.goj.restservice.entity.SourceCode;
 import com.goj.restservice.entity.Submission;
@@ -28,23 +31,18 @@ import com.goj.restservice.exception.CustomException;
 import com.goj.restservice.form.SubmissionForm;
 import com.goj.restservice.projection.SubmissionDetail;
 import com.goj.restservice.projection.SubmissionSummary;
+import com.goj.restservice.repository.ContestProblemRepository;
 import com.goj.restservice.repository.ContestRepository;
 import com.goj.restservice.repository.ProblemRepository;
 import com.goj.restservice.repository.SourceCodeRepository;
-import com.goj.restservice.repository.UserRepository;
-import com.goj.restservice.service.SubmissionService;
-
-import com.goj.restservice.util.Util;
+import com.goj.restservice.repository.SubmissionRepository;
 
 @RestController
 @RequestMapping(path = "/v1/submissions")
 @Validated
 public class SubmissionController {
     @Autowired
-    private SubmissionService submissionService;
-
-    @Autowired
-    private SourceCodeRepository sourceCodeRepository;
+    private SubmissionRepository submissionRepository;
 
     @Autowired
     private ProblemRepository problemRepository;
@@ -53,10 +51,10 @@ public class SubmissionController {
     private ContestRepository contestRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private ContestProblemRepository contestProblemRepository;
 
     @Autowired
-    private Util util;
+    private SourceCodeRepository sourceCodeRepository;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -64,29 +62,33 @@ public class SubmissionController {
             HttpServletResponse response, @AuthenticationPrincipal User user) {
 
         Problem problem = problemRepository.findById(submissionForm.getProblemId())
-                .orElseThrow(() -> new CustomException("Problem doesn't exist.", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
 
+        ContestProblem contestProblem = null;
         Contest contest = null;
         if (submissionForm.getContestId() != null) {
-            contest = contestRepository.findById(submissionForm.getContestId())
-                    .orElseThrow(() -> new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST));
+            contestProblem = contestProblemRepository
+                    .findById(new ContestProblemKey(submissionForm.getContestId(), submissionForm.getProblemId()))
+                    .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
+            contest = contestRepository.findById(submissionForm.getContestId()).get();
+            /*
+            contest.getContestProblemSet().remove(contestProblem);
+            contestProblem.setSubmit(contestProblem.getSubmit() + 1);
+            contest.getContestProblemSet().add(contestProblem);
+            */
         }
 
-        SourceCode newSourceCode = new SourceCode(submissionForm.getCode());
         problem.setSubmit(problem.getSubmit() + 1);
         user.setSubmit(user.getSubmit() + 1);
 
-        Submission newSubmission = new Submission(null, submissionForm.getProblemId(), user.getUserId(),
-                submissionForm.getLanguage(), submissionForm.getContestId());
+        Submission submission = new Submission(problem, user, submissionForm.getLanguage());
 
-        newSubmission.setSourceCode(newSourceCode);
-        newSubmission.setProblem(problem);
-        newSubmission.setUser(user);
+        SourceCode sourceCode = new SourceCode(submission, submissionForm.getCode());
 
-        Submission createdSubmission = submissionService.create(newSubmission);
+        sourceCodeRepository.save(sourceCode);
 
         response.setHeader("Location",
-                request.getRequestURL().append("/").append(createdSubmission.getSubmissionId()).toString());
+                request.getRequestURL().append("/").append(submission.getSubmissionId()).toString());
 
     }
 
@@ -94,16 +96,16 @@ public class SubmissionController {
     public @ResponseBody Iterable<SubmissionSummary> readAll(
             @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
             @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page) {
-        return submissionService.readAll(page - 1, per_page);
+        return submissionRepository.findAllSubmissionSummaryBy(PageRequest.of(page - 1, per_page));
     }
 
     @GetMapping("/{submissionId}")
     public @ResponseBody SubmissionDetail readOne(@PathVariable("submissionId") Long submissionId,
             @AuthenticationPrincipal User user) {
-        SubmissionDetail submissionDetail = submissionService.readOne(submissionId);
-        util.checkResourceFound(submissionDetail);
+        SubmissionDetail submissionDetail = submissionRepository.findSubmissionDetailBySubmissionId(submissionId)
+                .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
         if (!user.getUsername().equals(submissionDetail.getUserUsername()) && !user.getRoles().contains("ROLE_ADMIN"))
-            throw new CustomException("Method not allowed.", HttpStatus.BAD_REQUEST);
+            throw new CustomException("Method not allowed.", HttpStatus.METHOD_NOT_ALLOWED);
         return submissionDetail;
     }
 }

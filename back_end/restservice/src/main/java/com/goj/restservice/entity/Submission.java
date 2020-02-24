@@ -1,12 +1,20 @@
 package com.goj.restservice.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -16,28 +24,29 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @RequiredArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Submission {
     @Id
-    @Column(unique = true, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long submissionId;
 
-    @OneToOne
-    @JoinColumn(name = "submissionId", updatable = false, insertable = false, referencedColumnName = "submissionId")
+    @OneToOne(mappedBy = "submission", cascade = CascadeType.ALL)
     private SourceCode sourceCode;
 
-    @Column(nullable = false)
-    private Long problemId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @MapsId("problemId")
+    @JoinColumn(name = "problem_id", nullable = false)
+    Problem problem;
 
-    @ManyToOne
-    @JoinColumn(name = "problemId", updatable = false, insertable = false, referencedColumnName = "problemId")
-    private Problem problem;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @MapsId("userId")
+    @JoinColumn(name = "user_id", nullable = false)
+    User user;
 
-    @Column(nullable = false)
-    private Long userId;
-
-    @ManyToOne
-    @JoinColumn(name = "userId", updatable = false, insertable = false, referencedColumnName = "userId")
-    private User user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @MapsId("contestId")
+    @JoinColumn(name = "contest_id")
+    Contest contest;
 
     private Long time;
 
@@ -48,34 +57,20 @@ public class Submission {
     @Column(nullable = false)
     private short language;
 
+    @CreatedDate
     @Column(nullable = false)
     private LocalDateTime submitDateTime;
 
     @Column(length = 46)
     private String ip;
 
-    private Long contestId;
-
-    @ManyToOne
-    @JoinColumn(name = "contestId", updatable = false, insertable = false, referencedColumnName = "contestId")
-    private Contest contest;
-
     private Long codeLength;
 
     private LocalDateTime judgeTime;
 
-    public Submission(Long submissionId, Long problemId, Long userId, Short language, Long contestId) {
-        this.submissionId = submissionId;
-        this.problemId = problemId;
-        this.userId = userId;
+    public Submission(Problem problem, User user, Short language) {
+        this.problem = problem;
+        this.user = user;
         this.language = language;
-        this.contestId = contestId;
     }
-
-    @PrePersist
-    protected void prePersist() {
-        if (submitDateTime == null)
-            submitDateTime = LocalDateTime.now();
-    }
-
 }

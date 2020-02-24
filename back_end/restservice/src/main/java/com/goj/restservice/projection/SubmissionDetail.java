@@ -25,9 +25,9 @@ public interface SubmissionDetail {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     LocalDateTime getSubmitDateTime();
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     Long getCodeLength();
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     LocalDateTime getJudgeTime();
 
     @JsonProperty("code")
