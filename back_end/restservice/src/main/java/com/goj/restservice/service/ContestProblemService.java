@@ -18,8 +18,8 @@ public class ContestProblemService {
         return contestProblemRepository.save(newContestProblem);
     }
 
-    public Iterable<ProblemSummary> readAll(Long contestId, int page, int per_page) {
-        return contestProblemRepository.findAllByContestId(contestId, PageRequest.of(page, per_page));
+    public Iterable<ProblemSummary> readAll(Long contestId, Long userId, int page, int per_page) {
+        return contestProblemRepository.findAllByContestIdAndUserId(contestId, userId, PageRequest.of(page, per_page));
     }
 
     public void update(ContestProblem newContestProblem) {

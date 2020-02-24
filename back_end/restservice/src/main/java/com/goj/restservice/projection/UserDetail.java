@@ -1,11 +1,10 @@
 package com.goj.restservice.projection;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 
 public interface UserDetail {
-
-    Long getUserId();
 
     String getUsername();
 
@@ -13,17 +12,16 @@ public interface UserDetail {
 
     String getEmail();
 
-    List<String> getRoles();
-
     LocalDateTime getRegisterTime();
-
-    LocalDateTime getAccessTime();
-
-    String getIp();
 
     Long getSubmit();
 
     Long getAccepted();
 
-    Integer getRatio();
+    @Value("#{target.submit==0 ? 0 : target.accepted / target.submit}")
+    Long getRatio();
+
+    Long getSolved();
+
+    Long getRank();
 }

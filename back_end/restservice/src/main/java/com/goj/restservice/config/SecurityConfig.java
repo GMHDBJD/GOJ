@@ -35,12 +35,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic().disable().csrf().disable().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers("/v1/auth/**").permitAll().antMatchers(HttpMethod.GET, "/v1/contests").permitAll()
+                .antMatchers("/v1/auth/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/v1/contests").permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/contests/**").authenticated()
                 .antMatchers(HttpMethod.POST, "/v1/contests/*/users").authenticated()
                 .antMatchers(HttpMethod.GET, "/v1/problems/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/submissions").permitAll().antMatchers("/v1/submissions/**")
-                .authenticated().antMatchers("/v1/users/**").authenticated().anyRequest().hasRole("ADMIN").and().cors()
+                .antMatchers(HttpMethod.GET, "/v1/submissions").permitAll()
+                .antMatchers("/v1/submissions/**") .authenticated()
+                .antMatchers(HttpMethod.GET, "/v1/users").permitAll()
+                .antMatchers(HttpMethod.GET, "/v1/users/**").permitAll()
+                .antMatchers("/v1/users/**").authenticated()
+                .anyRequest().hasRole("ADMIN").and().cors()
                 .and()
                 /*
                  * .antMatchers("/auth/signin").permitAll(). antMatchers(HttpMethod.GET,

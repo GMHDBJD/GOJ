@@ -1,5 +1,7 @@
 package com.goj.restservice.projection;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public interface ProblemSummary {
     Long getProblemId();
 
@@ -9,5 +11,9 @@ public interface ProblemSummary {
 
     Long getSubmit();
 
-    Integer getRatio();
+    @Value("#{target.submit==0 ? 0 : target.accepted / target.submit}")
+    Long getRatio();
+
+    @Value("#{target.solved==1}")
+    Boolean getSolved();
 }

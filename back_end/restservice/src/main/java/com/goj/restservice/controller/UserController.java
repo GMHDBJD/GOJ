@@ -81,7 +81,7 @@ public class UserController {
             @Valid @RequestBody ResetNicknameForm resetNicknameForm, HttpServletRequest request,
             HttpServletResponse response, @AuthenticationPrincipal User user) {
         String newNickname = resetNicknameForm.getNewNickname();
-        if (user.getUsername().equals(username))
+        if (!user.getUsername().equals(username))
             throw new CustomException("Method not allowed.", HttpStatus.METHOD_NOT_ALLOWED);
 
         user.setNickname(newNickname);

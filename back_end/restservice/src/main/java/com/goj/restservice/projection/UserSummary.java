@@ -1,5 +1,7 @@
 package com.goj.restservice.projection;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public interface UserSummary {
 
     String getUsername();
@@ -10,5 +12,10 @@ public interface UserSummary {
 
     Long getAccepted();
 
-    Integer getRatio();
+    @Value("#{target.submit==0 ? 0 : target.accepted / target.submit}")
+    Long getRatio();
+
+    Long getSolved();
+
+    Long getRank();
 }

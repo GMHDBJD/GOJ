@@ -44,7 +44,8 @@ public class Contest {
     @Column(length = 100)
     private String password;
 
-    public Contest(String title, String description, LocalDateTime startTime, LocalDateTime endTime, String password) {
+    public void update(String title, String description, LocalDateTime startTime, LocalDateTime endTime,
+            String password) {
         this.title = title;
         this.description = description;
         this.startTime = startTime;

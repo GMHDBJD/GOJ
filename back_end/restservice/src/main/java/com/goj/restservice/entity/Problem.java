@@ -6,7 +6,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -51,10 +53,11 @@ public class Problem {
     private Long submit = 0L;
 
     @Column(nullable = false)
-    private Integer ratio = 0;
-
-    @Column(nullable = false)
     private Boolean randomTest = false;
+
+    @ManyToOne
+    @NotNull
+    private User createUser;
 
     @PrePersist
     protected void prePersist() {
@@ -62,7 +65,7 @@ public class Problem {
             createDate = LocalDate.now();
     }
 
-    public Problem(String title, String source, String description, String input, String output, String sampleInput,
+    public void update(String title, String source, String description, String input, String output, String sampleInput,
             String sampleOutput, String hint, Long timeLimit, Long memoryLimit) {
         this.title = title;
         this.source = source;

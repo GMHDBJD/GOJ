@@ -39,7 +39,7 @@ public class ContestProblem {
     private Long submit = 0L;
 
     @Column(nullable = false)
-    private Integer ratio = 0;
+    private Long solved = 0L;
 
     public ContestProblem(Long contestId, Long problemId, String title) {
         this.contestId = contestId;

@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
+import com.goj.restservice.entity.Contest;
+import com.goj.restservice.entity.Problem;
 import com.goj.restservice.entity.SourceCode;
 import com.goj.restservice.entity.Submission;
 import com.goj.restservice.entity.User;
@@ -26,7 +28,10 @@ import com.goj.restservice.exception.CustomException;
 import com.goj.restservice.form.SubmissionForm;
 import com.goj.restservice.projection.SubmissionDetail;
 import com.goj.restservice.projection.SubmissionSummary;
+import com.goj.restservice.repository.ContestRepository;
+import com.goj.restservice.repository.ProblemRepository;
 import com.goj.restservice.repository.SourceCodeRepository;
+import com.goj.restservice.repository.UserRepository;
 import com.goj.restservice.service.SubmissionService;
 
 import com.goj.restservice.util.Util;
@@ -42,17 +47,42 @@ public class SubmissionController {
     private SourceCodeRepository sourceCodeRepository;
 
     @Autowired
+    private ProblemRepository problemRepository;
+
+    @Autowired
+    private ContestRepository contestRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private Util util;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@Valid @RequestBody SubmissionForm submissionForm, HttpServletRequest request,
             HttpServletResponse response, @AuthenticationPrincipal User user) {
-        SourceCode newSourceCode = new SourceCode(submissionForm.getCode());
-        SourceCode createSourceCode = sourceCodeRepository.save(newSourceCode);
 
-        Submission newSubmission = new Submission(createSourceCode.getSubmissionId(), submissionForm.getProblemId(),
-                user.getUserId(), submissionForm.getLanguage(), submissionForm.getContestId());
+        Problem problem = problemRepository.findById(submissionForm.getProblemId())
+                .orElseThrow(() -> new CustomException("Problem doesn't exist.", HttpStatus.BAD_REQUEST));
+
+        Contest contest = null;
+        if (submissionForm.getContestId() != null) {
+            contest = contestRepository.findById(submissionForm.getContestId())
+                    .orElseThrow(() -> new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST));
+        }
+
+        SourceCode newSourceCode = new SourceCode(submissionForm.getCode());
+        problem.setSubmit(problem.getSubmit() + 1);
+        user.setSubmit(user.getSubmit() + 1);
+
+        Submission newSubmission = new Submission(null, submissionForm.getProblemId(), user.getUserId(),
+                submissionForm.getLanguage(), submissionForm.getContestId());
+
+        newSubmission.setSourceCode(newSourceCode);
+        newSubmission.setProblem(problem);
+        newSubmission.setUser(user);
+
         Submission createdSubmission = submissionService.create(newSubmission);
 
         response.setHeader("Location",
@@ -72,7 +102,7 @@ public class SubmissionController {
             @AuthenticationPrincipal User user) {
         SubmissionDetail submissionDetail = submissionService.readOne(submissionId);
         util.checkResourceFound(submissionDetail);
-        if (user.getUsername().equals(submissionDetail.getUserUsername()))
+        if (!user.getUsername().equals(submissionDetail.getUserUsername()) && !user.getRoles().contains("ROLE_ADMIN"))
             throw new CustomException("Method not allowed.", HttpStatus.BAD_REQUEST);
         return submissionDetail;
     }

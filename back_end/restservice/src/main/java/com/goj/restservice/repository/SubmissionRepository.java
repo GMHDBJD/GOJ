@@ -16,5 +16,7 @@ import com.goj.restservice.projection.SubmissionSummary;
 public interface SubmissionRepository extends PagingAndSortingRepository<Submission, Long> {
     Page<SubmissionSummary> findAllSubmissionSummaryBy(Pageable pageable);
 
+    Page<SubmissionSummary> findAllSubmissionSummaryByContestId(Long contestId, Pageable pageable);
+
     Optional<SubmissionDetail> findSubmissionDetailBySubmissionId(Long submissionId);
 }

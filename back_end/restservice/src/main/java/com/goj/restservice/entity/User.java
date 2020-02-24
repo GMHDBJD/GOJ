@@ -62,7 +62,7 @@ public class User implements UserDetails {
     private Long accepted = 0L;
 
     @Column(nullable = false)
-    private Integer ratio = 0;
+    private Long solved = 0L;
 
     @Column(length = 100)
     private String password;

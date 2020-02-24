@@ -23,7 +23,7 @@ public class SubmissionForm implements Serializable {
     @NotNull(message = "problemId could not be null.")
     Long problemId;
 
-    @Max(value = 10, message = "language should be less than or equal to 10")
+    @Max(value = 4, message = "language should be less than or equal to 4")
     @Min(value = 1, message = "language should be greater than or equal to 1")
     @NotNull(message = "language could not be null.")
     Short language;

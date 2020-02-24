@@ -2,6 +2,7 @@ package com.goj.restservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +22,15 @@ import javax.validation.constraints.Min;
 
 import com.goj.restservice.entity.ContestProblem;
 import com.goj.restservice.entity.Problem;
+import com.goj.restservice.entity.User;
 import com.goj.restservice.entity.ContestProblemId;
 import com.goj.restservice.exception.CustomException;
 import com.goj.restservice.form.ContestProblemForm;
+import com.goj.restservice.projection.ContestDetail;
 import com.goj.restservice.projection.ProblemSummary;
-import com.goj.restservice.repository.ContestRepository;
+import com.goj.restservice.repository.ContestUserRepository;
 import com.goj.restservice.service.ContestProblemService;
+import com.goj.restservice.service.ContestService;
 import com.goj.restservice.service.ProblemService;
 
 import com.goj.restservice.util.Util;
@@ -39,7 +43,10 @@ public class ContestProblemController {
     private ContestProblemService contestProblemService;
 
     @Autowired
-    private ContestRepository contestRepository;
+    private ContestService contestService;
+
+    @Autowired
+    private ContestUserRepository contestUserRepository;
 
     @Autowired
     private ProblemService problemService;
@@ -51,12 +58,15 @@ public class ContestProblemController {
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@PathVariable("contestId") Long contestId,
             @Valid @RequestBody ContestProblemForm contestProblemForm, HttpServletRequest request,
-            HttpServletResponse response) {
+            HttpServletResponse response, @AuthenticationPrincipal User user) {
 
         Long problemId = contestProblemForm.getProblemId();
 
-        if (!contestRepository.existsById(contestId))
-            throw new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST);
+        ContestDetail contestDetail = contestService.readOne(contestId);
+        util.checkResourceFound(contestDetail);
+
+        if (!contestDetail.getCreateUserUsername().equals(user.getUsername()) && !user.getRoles().contains("ROLE_GMH"))
+            throw new CustomException("Method not allow.", HttpStatus.BAD_REQUEST);
 
         Problem problem = problemService.readOne(problemId);
         util.checkResourceFound(problem);
@@ -72,24 +82,34 @@ public class ContestProblemController {
     @GetMapping
     public @ResponseBody Iterable<ProblemSummary> readAll(@PathVariable("contestId") Long contestId,
             @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
-            @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page) {
+            @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page,
+            @AuthenticationPrincipal User user) {
 
-        if (!contestRepository.existsById(contestId))
-            throw new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST);
+        ContestDetail contestDetail = contestService.readOne(contestId);
+        util.checkResourceFound(contestDetail);
 
-        return contestProblemService.readAll(contestId, page - 1, per_page);
+        if (contestDetail.getCreateUserUsername().equals(user.getUsername()) || user.getRoles().contains("ROLE_GMH")
+                || contestUserRepository.existsByContestIdAndUserId(contestId, user.getUserId())) {
+            return contestProblemService.readAll(contestId, user.getUserId(), page - 1, per_page);
+        } else {
+            throw new CustomException("User doesn't join the contest.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/{problemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("contestId") Long contestId, @PathVariable("problemId") Long problemId,
-            HttpServletRequest request, HttpServletResponse response) {
+            HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal User user) {
 
-        if (!contestRepository.existsById(contestId))
-            throw new CustomException("Contest doesn't exist.", HttpStatus.BAD_REQUEST);
+        ContestDetail contestDetail = contestService.readOne(contestId);
+        util.checkResourceFound(contestDetail);
 
-        ContestProblemId contestProblemId = new ContestProblemId(contestId, problemId);
+        if (contestDetail.getCreateUserUsername().equals(user.getUsername()) || user.getRoles().contains("ROLE_GMH")) {
 
-        contestProblemService.delete(contestProblemId);
+            ContestProblemId contestProblemId = new ContestProblemId(contestId, problemId);
+            contestProblemService.delete(contestProblemId);
+        } else {
+            throw new CustomException("Method not allow.", HttpStatus.BAD_REQUEST);
+        }
     }
 }
