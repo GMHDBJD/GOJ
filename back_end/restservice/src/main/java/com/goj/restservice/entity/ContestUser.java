@@ -42,4 +42,19 @@ public class ContestUser {
         this.contest = contest;
         this.user = user;
     }
+
+    public void setOwner(Contest contest) {
+        if (sameAsFormer(contest))
+            return;
+        Contest oldContest = this.contest;
+        this.contest = contest;
+        if (oldContest != null)
+            oldContest.removeContestUser(this);
+        if (contest != null)
+            contest.addContestUser(this);
+    }
+
+    private boolean sameAsFormer(Contest newContest) {
+        return contest == null ? newContest == null : contest.equals(newContest);
+    }
 }

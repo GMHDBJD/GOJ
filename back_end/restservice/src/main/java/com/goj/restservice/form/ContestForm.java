@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContestForm implements Serializable {
-    private static final long serialVersionUID = -6986746375915710855L;
+    private static final long serialVersionUID = 1L;
 
     @NotNull(message = "title could not be null")
     @Size(max = 255, message = "title length length should less than or equal to 255")

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +48,10 @@ public class ContestUserController {
 
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new CustomException("Contest doesn't exist", HttpStatus.BAD_REQUEST));
+
+        if (contest.getStartTime().isBefore(LocalDateTime.now()))
+            throw new CustomException("Contest has begun.", HttpStatus.METHOD_NOT_ALLOWED);
+
 
         String password = contestUserForm.get("password");
         if (contest.getPassword() != null && !contest.getPassword().equals(password)) {

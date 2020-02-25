@@ -99,4 +99,19 @@ public class Contest {
         contestProblem.setOwner(null);
     }
 
+    public void addContestUser(ContestUser contestUser) {
+        if (contestUserList.contains(contestUser))
+            return;
+        contestUserList.add(contestUser);
+        contestUser.setOwner(this);
+    }
+
+    public void removeContestUser(ContestUser contestUser) {
+        if (!contestUserList.contains(contestUser))
+            return;
+        contestUserList.remove(contestUser);
+        contestUser.setOwner(null);
+    }
+
+
 }

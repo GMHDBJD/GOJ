@@ -63,9 +63,10 @@ public class Submission {
 
     private LocalDateTime judgeTime;
 
-    public Submission(Problem problem, User user, Short language) {
+    public Submission(Problem problem, User user, Contest contest, Short language) {
         this.problem = problem;
         this.user = user;
+        this.contest = contest;
         this.language = language;
     }
 }

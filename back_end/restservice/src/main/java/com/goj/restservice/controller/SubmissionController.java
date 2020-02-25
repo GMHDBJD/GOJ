@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -23,6 +25,8 @@ import javax.validation.constraints.Min;
 import com.goj.restservice.entity.Contest;
 import com.goj.restservice.entity.ContestProblem;
 import com.goj.restservice.entity.ContestProblemKey;
+import com.goj.restservice.entity.ContestUser;
+import com.goj.restservice.entity.ContestUserKey;
 import com.goj.restservice.entity.Problem;
 import com.goj.restservice.entity.SourceCode;
 import com.goj.restservice.entity.Submission;
@@ -33,6 +37,7 @@ import com.goj.restservice.projection.SubmissionDetail;
 import com.goj.restservice.projection.SubmissionSummary;
 import com.goj.restservice.repository.ContestProblemRepository;
 import com.goj.restservice.repository.ContestRepository;
+import com.goj.restservice.repository.ContestUserRepository;
 import com.goj.restservice.repository.ProblemRepository;
 import com.goj.restservice.repository.SourceCodeRepository;
 import com.goj.restservice.repository.SubmissionRepository;
@@ -58,6 +63,9 @@ public class SubmissionController {
     private ContestProblemRepository contestProblemRepository;
 
     @Autowired
+    private ContestUserRepository contestUserRepository;
+
+    @Autowired
     private SourceCodeRepository sourceCodeRepository;
 
     @PostMapping
@@ -76,17 +84,29 @@ public class SubmissionController {
             contestProblem = contestProblemRepository
                     .findById(new ContestProblemKey(submissionForm.getContestId(), submissionForm.getProblemId()))
                     .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
+
+            ContestUser contestUser = contestUserRepository
+                    .findById(new ContestUserKey(submissionForm.getContestId(), submitUser.getUserId()))
+                    .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
+
             contest = contestRepository.findById(submissionForm.getContestId()).get();
+
+            if (contest.getEndTime().isBefore(LocalDateTime.now()))
+                throw new CustomException("Contest has ended", HttpStatus.METHOD_NOT_ALLOWED);
 
             contest.removeContestProblem(contestProblem);
             contestProblem.setSubmit(contestProblem.getSubmit() + 1);
             contest.addContestProblem(contestProblem);
+
+            contest.removeContestUser(contestUser);
+            contestUser.setSubmit(contestUser.getSubmit() + 1);
+            contest.addContestUser(contestUser);
         }
 
         problem.setSubmit(problem.getSubmit() + 1);
         submitUser.setSubmit(submitUser.getSubmit() + 1);
 
-        Submission submission = new Submission(problem, submitUser, submissionForm.getLanguage());
+        Submission submission = new Submission(problem, submitUser, contest, submissionForm.getLanguage());
 
         SourceCode sourceCode = new SourceCode(submission, submissionForm.getCode());
 
