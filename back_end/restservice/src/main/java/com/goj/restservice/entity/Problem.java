@@ -1,7 +1,7 @@
 package com.goj.restservice.entity;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,6 +10,8 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.springframework.data.annotation.CreatedBy;
@@ -56,11 +58,15 @@ public class Problem {
     @Column(nullable = false)
     private LocalDate lastModifiedDate;
 
+    @ManyToOne
+    @JoinColumn(name = "create_user_id", nullable = false)
     @CreatedBy
-    private String createUser;
+    private User createUser;
 
+    @ManyToOne
+    @JoinColumn(name = "last_modified_user_id", nullable = false)
     @LastModifiedBy
-    private String lastModifiedUser;
+    private User lastModifiedUser;
 
     private Long timeLimit;
 
@@ -76,10 +82,10 @@ public class Problem {
     private Boolean randomTest = false;
 
     @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ContestProblem> contestProblemSet;
+    private List<ContestProblem> contestProblemList;
 
     @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Submission> submissionSet;
+    private List<Submission> submissionList;
 
     public Problem(String title, String source, String description, String input, String output, String sampleInput,
             String sampleOutput, String hint, Long timeLimit, Long memoryLimit) {

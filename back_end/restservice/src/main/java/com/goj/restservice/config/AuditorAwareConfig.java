@@ -1,5 +1,6 @@
 package com.goj.restservice.config;
 
+import com.goj.restservice.entity.User;
 import com.goj.restservice.security.SpringSecurityAuditorAware;
 
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class AuditorAwareConfig {
 
   @Bean
-  public AuditorAware<String> auditorProvider() {
+  public AuditorAware<User> auditorProvider() {
     return new SpringSecurityAuditorAware();
   }
 }

@@ -4,13 +4,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -33,19 +31,16 @@ public class Submission {
     @OneToOne(mappedBy = "submission", cascade = CascadeType.ALL)
     private SourceCode sourceCode;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @MapsId("problemId")
+    @ManyToOne
     @JoinColumn(name = "problem_id", nullable = false)
     Problem problem;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @MapsId("userId")
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @MapsId("contestId")
-    @JoinColumn(name = "contest_id")
+    @ManyToOne
+    @JoinColumn(name = "contest_id", nullable = true)
     Contest contest;
 
     private Long time;

@@ -23,10 +23,10 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
@@ -54,7 +54,7 @@ public class User implements UserDetails {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(joinColumns = @JoinColumn(name = "user_id"))
-    private Set<String> roles = new HashSet<>(Arrays.asList("ROLE_USER"));
+    private List<String> roles = new ArrayList<>(Arrays.asList("ROLE_USER"));
 
     @Column(nullable = false)
     private Long submit = 0L;

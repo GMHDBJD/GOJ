@@ -14,8 +14,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,7 +56,7 @@ public class AuthController {
             String password = signinForm.get("password");
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
-            Set<String> roles = userRepository.findByUsername(username).get().getRoles();
+            List<String> roles = userRepository.findByUsername(username).get().getRoles();
 
             String token = jwtTokenProvider.createToken(username, roles);
 

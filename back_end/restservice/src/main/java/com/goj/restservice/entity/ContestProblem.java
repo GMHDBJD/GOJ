@@ -46,4 +46,19 @@ public class ContestProblem {
         this.problem = problem;
         this.title = title;
     }
+
+    public void setOwner(Contest contest) {
+        if (sameAsFormer(contest))
+            return;
+        Contest oldContest = this.contest;
+        this.contest = contest;
+        if (oldContest != null)
+            oldContest.removeContestProblem(this);
+        if (contest != null)
+            contest.addContestProblem(this);
+    }
+
+    private boolean sameAsFormer(Contest newContest) {
+        return contest == null ? newContest == null : contest.equals(newContest);
+    }
 }

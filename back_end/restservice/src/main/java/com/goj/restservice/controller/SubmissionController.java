@@ -36,6 +36,7 @@ import com.goj.restservice.repository.ContestRepository;
 import com.goj.restservice.repository.ProblemRepository;
 import com.goj.restservice.repository.SourceCodeRepository;
 import com.goj.restservice.repository.SubmissionRepository;
+import com.goj.restservice.repository.UserRepository;
 
 @RestController
 @RequestMapping(path = "/v1/submissions")
@@ -46,6 +47,9 @@ public class SubmissionController {
 
     @Autowired
     private ProblemRepository problemRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ContestRepository contestRepository;
@@ -64,6 +68,8 @@ public class SubmissionController {
         Problem problem = problemRepository.findById(submissionForm.getProblemId())
                 .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
 
+        User submitUser = userRepository.findById(user.getUserId()).get();
+
         ContestProblem contestProblem = null;
         Contest contest = null;
         if (submissionForm.getContestId() != null) {
@@ -71,17 +77,16 @@ public class SubmissionController {
                     .findById(new ContestProblemKey(submissionForm.getContestId(), submissionForm.getProblemId()))
                     .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
             contest = contestRepository.findById(submissionForm.getContestId()).get();
-            /*
-            contest.getContestProblemSet().remove(contestProblem);
+
+            contest.removeContestProblem(contestProblem);
             contestProblem.setSubmit(contestProblem.getSubmit() + 1);
-            contest.getContestProblemSet().add(contestProblem);
-            */
+            contest.addContestProblem(contestProblem);
         }
 
         problem.setSubmit(problem.getSubmit() + 1);
-        user.setSubmit(user.getSubmit() + 1);
+        submitUser.setSubmit(submitUser.getSubmit() + 1);
 
-        Submission submission = new Submission(problem, user, submissionForm.getLanguage());
+        Submission submission = new Submission(problem, submitUser, submissionForm.getLanguage());
 
         SourceCode sourceCode = new SourceCode(submission, submissionForm.getCode());
 

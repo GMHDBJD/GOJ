@@ -7,6 +7,8 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.springframework.data.annotation.CreatedBy;
@@ -20,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -48,23 +50,27 @@ public class Contest {
     @Column(nullable = false)
     private LocalDate lastModifiedDate;
 
+    @ManyToOne
+    @JoinColumn(name = "create_user_id", nullable = false)
     @CreatedBy
-    private String createUser;
+    private User createUser;
 
+    @ManyToOne
+    @JoinColumn(name = "last_modified_user_id", nullable = false)
     @LastModifiedBy
-    private String lastModifiedUser;
+    private User lastModifiedUser;
 
     @Column(length = 100)
     private String password;
 
     @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ContestProblem> contestProblemSet;
+    private List<ContestProblem> contestProblemList;
 
     @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ContestUser> contestUserSet;
+    private List<ContestUser> contestUserList;
 
     @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Submission> contestSet;
+    private List<Submission> contestList;
 
     public Contest(String title, String description, LocalDateTime startTime, LocalDateTime endTime, String password) {
         this.update(title, description, startTime, endTime, password);
@@ -78,4 +84,19 @@ public class Contest {
         this.endTime = endTime;
         this.password = password;
     }
+
+    public void addContestProblem(ContestProblem contestProblem) {
+        if (contestProblemList.contains(contestProblem))
+            return;
+        contestProblemList.add(contestProblem);
+        contestProblem.setOwner(this);
+    }
+
+    public void removeContestProblem(ContestProblem contestProblem) {
+        if (!contestProblemList.contains(contestProblem))
+            return;
+        contestProblemList.remove(contestProblem);
+        contestProblem.setOwner(null);
+    }
+
 }
