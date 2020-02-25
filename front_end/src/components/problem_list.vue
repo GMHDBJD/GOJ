@@ -1,6 +1,6 @@
 <template>
   <div id="problem_list">
-    <v-card>
+    <v-card min-height="100vh">
       <v-card-title>
         Problem
         <v-spacer></v-spacer>
@@ -8,8 +8,6 @@
           v-model="search"
           label="Search"
           single-line
-          append-icon="mdi-search"
-          hide-details
         ></v-text-field>
       </v-card-title>
       <v-data-table
@@ -18,41 +16,33 @@
         :search="search"
         :page.sync="page"
         :items-per-page="itemsPerPage"
+        @click:row="toProblem"
         class="elevation-1"
         hide-default-footer
       >
-        <template v-slot:item.success="{ item }">
-          <v-simple-checkbox v-model="item.submit" disabled></v-simple-checkbox>
-        </template>
-        <template v-slot:item.problemId="{ item }">
-          <router-link
-            :to="
-              isContest
-                ? contestId + '/problems/' + item.problemId
-                : 'problems/' + item.problemId
-            "
-          >
-            {{ item.problemId }}
-          </router-link>
+        <template v-slot:item.solved="{ item }">
+          <v-simple-checkbox v-model="item.solved" disabled></v-simple-checkbox>
         </template>
       </v-data-table>
-      <v-pagination v-model="page" :length="totalPages"></v-pagination>
     </v-card>
+    <v-pagination
+      class="mt-5"
+      v-model="page"
+      :length="totalPages"
+    ></v-pagination>
   </div>
 </template>
 
 <script>
 import axios from '@/axios'
+import { EventBus } from '@/eventbus'
 
 export default {
   name: 'problem_list',
-  props: {
-    isContest: { type: Boolean, default: false }
-  },
   data() {
     return {
       headers: [
-        { text: '', value: 'success', align: 'right' },
+        { text: '', value: 'solved', align: 'right', filterable: false },
         { text: 'ID', value: 'problemId', align: 'left' },
         { text: 'Title', value: 'title', align: 'left' },
         { text: 'Ratio', value: 'ratio', filterable: false, align: 'left' },
@@ -68,8 +58,7 @@ export default {
       search: '',
       itemsPerPage: 30,
       page: 1,
-      totalPages: 0,
-      contestId: this.$route.params.contestId
+      totalPages: 0
     }
   },
   mounted() {
@@ -78,7 +67,7 @@ export default {
   methods: {
     getData() {
       let url = ''
-      if (this.isContest)
+      if (this.$route.params.contestId)
         url = `contests/${this.$route.params.contestId}/problems`
       else url = 'problems'
       axios
@@ -90,7 +79,14 @@ export default {
               this.itemsPerPage
           )
         })
-        .catch(error => console.log(error))
+        .catch(error => EventBus.$emit('callAlert', error))
+    },
+    toProblem(problem) {
+      let url = ''
+      if (this.$route.params.contestId)
+        url = `/contests/${this.$route.params.contestId}/problems/${problem.problemId}`
+      else url = `/problems/${problem.problemId}`
+      this.$router.push(url)
     }
   }
 }

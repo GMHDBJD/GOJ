@@ -1,18 +1,16 @@
 <template>
-  <div id="statu">
-    <v-card>
-      <StatusList></StatusList>
-    </v-card>
+  <div id="status">
+    <StatuList></StatuList>
   </div>
 </template>
 
 <script>
-import StatusList from '@/components/status_list.vue'
+import StatuList from '@/components/statu_list.vue'
 
 export default {
-  name: 'statu',
+  name: 'status',
   components: {
-    StatusList
+    StatuList
   }
 }
 </script>

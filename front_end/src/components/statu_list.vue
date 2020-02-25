@@ -65,9 +65,18 @@
           </router-link>
         </template>
         <template v-slot:item.language="{ item }">
-          <router-link :to="'/status/' + item.submissionId">
+          <router-link
+            :to="'/status/' + item.submissionId"
+            v-if="
+              $store.getters.isAdmin ||
+                ($store.state.isLogin && item.username == $store.state.username)
+            "
+          >
             {{ item.language }}
           </router-link>
+          <td v-else>
+            {{ item.language }}
+          </td>
         </template>
       </v-data-table>
     </v-card>
@@ -81,6 +90,7 @@
 
 <script>
 import axios from '@/axios'
+import { EventBus } from '@/eventbus'
 
 export default {
   name: 'statu_list',
@@ -176,7 +186,7 @@ export default {
           this.status = response.data.content
           this.totalPages = response.data.totalPages
         })
-        .catch(error => console.log(error))
+        .catch(error => EventBus.$emit('callAlert', error))
     }
   }
 }

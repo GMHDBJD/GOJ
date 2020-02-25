@@ -17,8 +17,8 @@
           <v-list-item to="/contests">
             <v-list-item-title>Contest</v-list-item-title>
           </v-list-item>
-          <v-list-item to="/statu">
-            <v-list-item-title>Status</v-list-item-title>
+          <v-list-item to="/status">
+            <v-list-item-title>Statu</v-list-item-title>
           </v-list-item>
           <v-list-item to="/ranking">
             <v-list-item-title>Ranking</v-list-item-title>
@@ -33,7 +33,7 @@
       <v-toolbar-items v-if="!this.$store.state.isMobile">
         <v-btn text to="/problems">Problem</v-btn>
         <v-btn text to="/contests">Contest</v-btn>
-        <v-btn text to="/statu">Status</v-btn>
+        <v-btn text to="/status">Statu</v-btn>
         <v-btn text to="/ranking">Ranking</v-btn>
         <v-btn text to="/queue">Queue</v-btn>
       </v-toolbar-items>
@@ -56,7 +56,7 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item :to="'user/' + username">
+          <v-list-item :to="'/users/' + username">
             <v-list-item-title>profile</v-list-item-title>
           </v-list-item>
           <v-list-item to="/" @click="logout">
@@ -67,6 +67,14 @@
     </v-app-bar>
 
     <v-content app>
+      <v-dialog v-model="showAlert" max-width="500px">
+        <v-alert type="error">
+          <div class="display-2">{{ status }}</div>
+          <br />
+          {{ errors }}
+        </v-alert>
+      </v-dialog>
+
       <v-dialog v-model="dialog_login" max-width="500px">
         <LoginRegister @close="dialog_login = false"></LoginRegister>
       </v-dialog>
@@ -102,6 +110,7 @@
 
 <script>
 import LoginRegister from '@/components/login_register.vue'
+import { EventBus } from '@/eventbus'
 
 export default {
   name: 'app',
@@ -111,8 +120,23 @@ export default {
   data() {
     return {
       dialog_login: false,
-      menu: false
+      menu: false,
+      showAlert: false,
+      status: null,
+      errors: null
     }
+  },
+  created() {
+    EventBus.$on('callLogin', () => {
+      this.dialog_login = true
+    })
+    EventBus.$on('callAlert', error => {
+      if (error) {
+        this.showAlert = true
+        this.status = error.response.data.status
+        this.errors = error.response.data.errors
+      }
+    })
   },
   computed: {
     username() {

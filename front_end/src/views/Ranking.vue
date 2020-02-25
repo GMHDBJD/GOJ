@@ -1,8 +1,6 @@
 <template>
   <div id="ranking">
-    <v-card>
-      <RankingList></RankingList>
-    </v-card>
+    <RankingList></RankingList>
   </div>
 </template>
 

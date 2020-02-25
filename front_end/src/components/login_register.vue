@@ -15,10 +15,14 @@
               <v-text-field
                 label="Username"
                 v-model="loginUsername"
+                :rules="loginUsernameRules"
+                required
               ></v-text-field>
               <v-text-field
                 label="Password"
                 type="password"
+                :rules="loginPasswordRules"
+                required
                 v-model="loginPassword"
               ></v-text-field>
               <v-btn block color="primary" class="mr-4" @click="login">
@@ -27,22 +31,33 @@
             </v-form>
           </v-tab-item>
           <v-tab-item transition="false" reverse-transition="false">
-            <v-form ref="register_form">
+            <v-form ref="register_form" v-model="valid">
               <v-text-field
                 label="Username"
                 v-model="registerUsername"
+                :rules="registerUsernameRules"
+                required
               ></v-text-field>
               <v-text-field
                 label="Password"
                 type="password"
+                :rules="registerPasswordRules"
                 v-model="registerPassword"
+                required
               ></v-text-field>
               <v-text-field
                 label="Password again"
                 type="password"
+                :rules="confirmPasswordRules"
                 v-model="confirmPassword"
+                required
               ></v-text-field>
-              <v-text-field label="Email" v-model="email"></v-text-field>
+              <v-text-field
+                label="Email"
+                v-model="email"
+                :rules="emailRules"
+                required
+              ></v-text-field>
               <v-btn block color="primary" class="mr-4" @click="register">
                 Register
               </v-btn>
@@ -56,37 +71,62 @@
 
 <script>
 import axios from '@/axios'
+import { EventBus } from '@/eventbus'
 
 export default {
   name: 'login_register',
-  data: () => ({
-    tabs: null,
-    loginUsername: '',
-    loginPassword: '',
-    registerUsername: '',
-    registerPassword: '',
-    email: '',
-    confirmPassword: '',
-    errorMessage: ''
-  }),
+  data() {
+    return {
+      tabs: null,
+      loginUsername: '',
+      loginPassword: '',
+      registerUsername: '',
+      registerPassword: '',
+      email: '',
+      confirmPassword: '',
+      valid: true,
+      registerUsernameRules: [
+        v => !!v || 'username is required',
+        v => (v && v.length <= 15) || 'Name must be less than 15 characters'
+      ],
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+\..+/.test(v) || 'E-mail must be valid'
+      ],
+      registerPasswordRules: [
+        v => !!v || 'password is required',
+        v =>
+          (v && v.length >= 5 && v.length <= 15) ||
+          'password length should between 5 and 15'
+      ],
+      confirmPasswordRules: [
+        v => !!v || 'Confirm password',
+        v => v === this.registerPassword || 'Passwords do not match'
+      ],
+      loginUsernameRules: [v => !!v || 'username is required'],
+      loginPasswordRules: [v => !!v || 'password is required']
+    }
+  },
   methods: {
     login(e) {
       e.preventDefault()
+      if (!this.$refs.login_form.validate()) return
       axios
         .post('auth/signin', {
           username: this.loginUsername,
           password: this.loginPassword
         })
         .then(response => {
+          this.$emit('close')
           this.$store.commit('login', response.data)
         })
-        .catch(error => {
-          console.log(error)
+        .catch(() => {
+          EventBus.$emit('callLogin')
         })
-      this.$emit('close')
     },
     register(e) {
       e.preventDefault()
+      if (!this.$refs.register_form.validate()) return
       axios
         .post('auth/signup', {
           username: this.registerUsername,
@@ -99,7 +139,7 @@ export default {
           this.loginUsername = this.registerUsername
           this.loginPassword = ''
         })
-        .catch(error => console.log(error))
+        .catch(error => EventBus.$emit('callAlert', error))
     }
   }
 }

@@ -2,7 +2,7 @@
   <div id="contests">
     <v-btn
       class="ma-2"
-      color="red"
+      color="secondary"
       @click.stop="add = true"
       v-if="this.$store.getters.isAdmin"
       dark
@@ -16,14 +16,16 @@
           <v-form ref="addContestForm">
             <v-text-field label="title" v-model="title"></v-text-field>
             <v-textarea label="description" v-model="description"></v-textarea>
-            <v-text-field label="startTime" v-model="startTime"></v-text-field>
-            <v-text-field label="endTime" v-model="endTime"></v-text-field>
+            <v-datetime-picker label="startTime" v-model="startTime">
+            </v-datetime-picker>
+            <v-datetime-picker label="endTime" v-model="endTime">
+            </v-datetime-picker>
             <v-text-field
               label="password"
               type="password"
               v-model="password"
             ></v-text-field>
-            <v-btn block color="red" dark class="mr-4" @click="addOne">
+            <v-btn block color="secondary" dark class="mr-4" @click="addOne">
               Add
             </v-btn>
           </v-form>
@@ -37,6 +39,7 @@
 <script>
 import ContestList from '@/components/contest_list.vue'
 import axios from '@/axios'
+import { EventBus } from '@/eventbus'
 
 export default {
   name: 'contests',
@@ -66,8 +69,8 @@ export default {
         .then(() => {
           this.add = false
         })
-        .catch(error => {
-          console.log(error)
+        .catch(() => {
+          EventBus.$emit('callLogin')
         })
     }
   }

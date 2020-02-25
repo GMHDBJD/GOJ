@@ -1,6 +1,6 @@
 <template>
   <div id="ranking_list">
-    <v-card>
+    <v-card min-height="100vh">
       <v-card-title>
         Ranking
         <v-spacer></v-spacer>
@@ -23,14 +23,24 @@
         class="elevation-1"
         hide-default-footer
       >
+        <template v-slot:item.username="{ item }">
+          <router-link :to="'/users/' + item.username">
+            {{ item.username }}
+          </router-link>
+        </template>
       </v-data-table>
-      <v-pagination v-model="page" :length="totalPages"></v-pagination>
     </v-card>
+    <v-pagination
+      class="mt-5"
+      v-model="page"
+      :length="totalPages"
+    ></v-pagination>
   </div>
 </template>
 
 <script>
 import axios from '@/axios'
+import { EventBus } from '@/eventbus'
 
 export default {
   name: 'ranking_list',
@@ -46,6 +56,11 @@ export default {
           text: 'accepted',
           value: 'accepted',
           filterable: false
+        },
+        {
+          text: 'solved',
+          value: 'solved',
+          filterable: false
         }
       ],
       users: [],
@@ -53,7 +68,7 @@ export default {
       itemsPerPage: 30,
       page: 1,
       totalPages: 0,
-      sortBy: 'accepted',
+      sortBy: 'solved',
       sortDesc: true
     }
   },
@@ -76,8 +91,13 @@ export default {
   },
   methods: {
     getData() {
+      let url = ''
+
+      if (this.$route.params.contestId)
+        url = `contests/${this.$route.params.contestId}/users`
+      else url = 'users'
       axios
-        .get('users')
+        .get(url)
         .then(response => {
           this.users = response.data.content
           this.totalPages = Math.floor(
@@ -85,7 +105,7 @@ export default {
               this.itemsPerPage
           )
         })
-        .catch(error => console.log(error))
+        .catch(error => EventBus.$emit('callAlert', error))
     }
   }
 }

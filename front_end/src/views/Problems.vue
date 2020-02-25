@@ -13,7 +13,7 @@
       <v-card>
         <v-card-title>Add Problem</v-card-title>
         <v-card-text>
-          <v-form ref="addProblemForm">
+          <v-form ref="addForm">
             <v-text-field label="title" v-model="title"></v-text-field>
             <v-text-field label="source" v-model="source"></v-text-field>
             <v-textarea label="description" v-model="description"></v-textarea>
@@ -44,6 +44,7 @@
 <script>
 import ProblemList from '@/components/problem_list.vue'
 import axios from '@/axios'
+import { EventBus } from '@/eventbus'
 
 export default {
   name: 'problems',
@@ -83,8 +84,8 @@ export default {
         .then(() => {
           this.add = false
         })
-        .catch(error => {
-          console.log(error)
+        .catch(() => {
+          EventBus.$emit('callLogin')
         })
     }
   }

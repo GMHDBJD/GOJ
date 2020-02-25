@@ -36,7 +36,13 @@
       <v-divider class="my-2"></v-divider>
       <v-form>
         <v-container fluid>
-          <v-textarea disabled filled height="80vh" v-model="code"></v-textarea>
+          <v-textarea
+            disabled
+            filled
+            height="80vh"
+            label="Code"
+            v-model="code"
+          ></v-textarea>
           <v-btn large color="secondary" disabled>Submit </v-btn>
         </v-container>
       </v-form>

@@ -27,31 +27,49 @@
           disabled
         ></v-text-field>
         <v-text-field v-model="email" label="email" disabled></v-text-field>
-        submit:
-        <v-chip
-          color="green"
-          text-color="white"
-          :to="'/status?username=' + username"
-        >
-          {{ submit }}
-        </v-chip>
-        accepted:
-        <v-chip
-          color="red"
-          text-color="white"
-          :to="'/status?username=' + username + '&result=1'"
-        >
-          {{ accepted }}
-        </v-chip>
+        <v-row>
+          <v-spacer></v-spacer>
+          <div>
+            submit:
+            <v-chip
+              color="green"
+              text-color="white"
+              :to="'/status?username=' + username"
+            >
+              {{ submit }}
+            </v-chip>
+          </div>
+          <v-spacer></v-spacer>
+          <div>
+            <v-chip
+              color="red"
+              text-color="white"
+              :to="'/status?username=' + username + '&result=1'"
+            >
+              {{ accepted }}
+            </v-chip>
+            accepted
+          </div>
+          <v-spacer></v-spacer>
+        </v-row>
         <v-divider class="my-2"></v-divider>
-        Ratio:
-        <v-chip color="orange" text-color="white">
-          {{ ratio }}
-        </v-chip>
-        Solved:
-        <v-chip color="orange" text-color="white">
-          {{ solved }}
-        </v-chip>
+        <v-row>
+          <v-spacer></v-spacer>
+          <div>
+            Ratio
+            <v-chip color="orange" text-color="white">
+              {{ ratio }}
+            </v-chip>
+          </div>
+          <v-spacer></v-spacer>
+          <div>
+            <v-chip color="orange" text-color="white">
+              {{ solved }}
+            </v-chip>
+            Solved
+          </div>
+          <v-spacer></v-spacer>
+        </v-row>
 
         <v-divider class="my-3"></v-divider>
         <v-btn
@@ -131,11 +149,12 @@
 
 <script>
 import axios from '@/axios'
+import { EventBus } from '@/eventbus'
 
 export default {
   data() {
     return {
-      username: this.$route.params.username,
+      username: null,
       nickname: null,
       email: null,
       registerTime: null,
@@ -163,7 +182,7 @@ export default {
           this.passwordChange = false
           this.$store.commit('logout')
         })
-        .catch(error => console.log(error))
+        .catch(error => EventBus.$emit('callAlert', error))
     },
     changeNickname() {
       axios
@@ -173,12 +192,12 @@ export default {
         .then(() => {
           this.nicknameChange = false
         })
-        .catch(error => console.log(error))
+        .catch(error => EventBus.$emit('callAlert', error))
     }
   },
   mounted() {
     axios
-      .get(`users/${this.username}`)
+      .get(`users/${this.$route.params.username}`)
       .then(response => {
         this.username = response.data.username
         this.nickname = response.data.nickname
@@ -190,7 +209,7 @@ export default {
         this.rank = response.data.rank
         this.solved = response.data.solved
       })
-      .catch(error => console.log(error))
+      .catch(error => EventBus.$emit('callAlert', error))
   }
 }
 </script>

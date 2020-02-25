@@ -4,7 +4,7 @@
       class="ma-2"
       color="secondary"
       @click.stop="update = true"
-      v-if="this.$store.getters.isAdmin && !this.$route.meta.isContest"
+      v-if="this.$store.getters.isAdmin && !this.$route.params.contestId"
       dark
     >
       <v-icon left>mdi-update</v-icon>Update
@@ -21,7 +21,7 @@
 
     <v-dialog v-model="update" max-width="500px">
       <v-card>
-        <v-card-title>Update Contest</v-card-title>
+        <v-card-title>Update Problem</v-card-title>
         <v-card-text>
           <v-form ref="updateProblemForm">
             <v-text-field label="title" v-model="title"></v-text-field>
@@ -49,7 +49,7 @@
     </v-dialog>
     <v-dialog v-model="remove" max-width="500px">
       <v-card>
-        <v-card-title>Delete Contest</v-card-title>
+        <v-card-title>Delete Problem</v-card-title>
         <v-card-text>
           <v-form ref="DeleteProblemForm">
             <v-btn block color="secondary" dark class="mr-4" @click="deleteOne">
@@ -122,8 +122,10 @@
         <v-tab-item transition="false" reverse-transition="false">
           <v-form>
             <v-container fluid>
+              <v-select :items="languages" v-model="language" label="language">
+              </v-select>
               <v-textarea filled height="80vh" v-model="code"></v-textarea>
-              <v-btn large color="secondary">Submit </v-btn>
+              <v-btn large color="secondary" @click="submitCode">Submit </v-btn>
             </v-container>
           </v-form>
         </v-tab-item>
@@ -134,11 +136,13 @@
 
 <script>
 import axios from '@/axios'
+import { EventBus } from '@/eventbus'
 
 export default {
   data() {
     return {
       problemId: this.$route.params.problemId,
+      contestId: this.$route.params.contestId,
       title: null,
       source: null,
       description: null,
@@ -156,7 +160,9 @@ export default {
       code: null,
       tabs: 0,
       update: false,
-      remove: false
+      remove: false,
+      languages: [1, 2, 3, 4],
+      language: 1
     }
   },
   methods: {
@@ -177,13 +183,13 @@ export default {
         .then(() => {
           this.update = false
         })
-        .catch(error => {
-          console.log(error)
+        .catch(() => {
+          EventBus.$emit('callLogin')
         })
     },
     deleteOne() {
       let url = ''
-      if (this.$route.meta.isContest) {
+      if (this.$route.params.contestId) {
         url = `contests/${this.$route.params.contestId}/problems/${this.problemId}`
       } else {
         url = `problems/${this.problemId}`
@@ -193,9 +199,24 @@ export default {
         .then(() => {
           this.remove = false
         })
-        .catch(error => {
-          console.log(error)
+        .catch(() => {
+          EventBus.$emit('callLogin')
         })
+    },
+    submitCode() {
+      if (!this.$store.state.isLogin) {
+        EventBus.$emit('callLogin')
+        return
+      }
+      axios
+        .post(`submissions`, {
+          problemId: this.problemId,
+          contestId: this.contestId,
+          code: this.code,
+          language: this.language
+        })
+        .then()
+        .catch(error => EventBus.$emit('callAlert', error))
     }
   },
   mounted() {
@@ -217,7 +238,7 @@ export default {
         this.accepted = response.data.accepted
         this.ratio = response.data.ratio
       })
-      .catch(error => console.log(error))
+      .catch(error => EventBus.$emit('callAlert', error))
   }
 }
 </script>

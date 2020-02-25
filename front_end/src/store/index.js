@@ -35,17 +35,19 @@ export default new Vuex.Store({
         this.replaceState(
           Object.assign(state, JSON.parse(localStorage.getItem('store')))
         )
-        axios.defaults.headers.common['Authorization'] = state.token
-        axios
-          .get('auth/validate_token')
-          .then()
-          .catch(() => {
-            state.isLogin = false
-            state.token = ''
-            state.username = ''
-            state.roles = ''
-            axios.defaults.headers.common['Authorization'] = ''
-          })
+        if (state.token) {
+          axios.defaults.headers.common['Authorization'] = state.token
+          axios
+            .get('auth/validate_token')
+            .then()
+            .catch(() => {
+              state.isLogin = false
+              state.token = ''
+              state.username = ''
+              state.roles = ''
+              axios.defaults.headers.common['Authorization'] = ''
+            })
+        }
       }
     }
   },
