@@ -19,10 +19,10 @@ public class SourceCode {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name="submission_id")
+    @JoinColumn(name = "submission_id")
     private Submission submission;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String code;
 
     public SourceCode(Submission submission, String code) {

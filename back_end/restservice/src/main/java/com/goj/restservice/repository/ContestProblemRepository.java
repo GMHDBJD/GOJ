@@ -14,7 +14,7 @@ import com.goj.restservice.projection.ProblemSummary;
 // CRUD refers Create, Read, Update, Delete
 public interface ContestProblemRepository extends PagingAndSortingRepository<ContestProblem, ContestProblemKey> {
 
-    @Query(nativeQuery = true, value = "SELECT problem_id as problemId, title, accepted, submit, (SELECT EXISTS(SELECT 1 FROM submission s WHERE s.user_id = :userId AND s.contest_id=:contestId AND s.result = 0 AND cp.problem_id = s.problem_id)) as solved FROM contest_problem cp WHERE contest_id=:contestId ORDER BY cp.problem_id", countQuery = "SELECT COUNT(1) FROM contest_problem WHERE contest_id=:contestId")
+    @Query(nativeQuery = true, value = "SELECT problem_id as problemId, title, accepted, submit, (SELECT EXISTS(SELECT 1 FROM submission s WHERE s.user_id = :userId AND s.contest_id=:contestId AND s.result = 5 AND cp.problem_id = s.problem_id)) as solved FROM contest_problem cp WHERE contest_id=:contestId ORDER BY cp.problem_id", countQuery = "SELECT COUNT(1) FROM contest_problem WHERE contest_id=:contestId")
     public Page<ProblemSummary> findAllProblemSummaryByContestIdAndUserId(@Param("contestId") Long contestId,
             @Param("userId") Long userId, Pageable pageable);
 }

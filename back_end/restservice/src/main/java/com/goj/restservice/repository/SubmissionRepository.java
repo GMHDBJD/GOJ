@@ -8,6 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.goj.restservice.entity.Contest;
@@ -27,7 +28,8 @@ public interface SubmissionRepository extends PagingAndSortingRepository<Submiss
 
     @Transactional
     @Modifying
-    @Query(nativeQuery = true, value = "update submission s set s.result = :result, s.time = :time, s.memory = :memory WHERE s.submission_id = :submissionId")
+    @Query(nativeQuery = true, value = "update submission s set s.result = :result, s.time = :time, s.memory = :memory, s.code_length = :codeLength, s.judge_time = :judgeTime WHERE s.submission_id = :submissionId")
     void updateResult(@Param("submissionId") Long submissionId, @Param("result") Short result,
-            @Param("memory") Long memory, @Param("time") Long time);
+            @Param("memory") Long memory, @Param("time") Long time, @Param("codeLength") Long codeLength,
+            @Param("judgeTime") LocalDateTime judgeTime);
 }

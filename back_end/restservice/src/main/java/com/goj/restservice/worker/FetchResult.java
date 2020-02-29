@@ -16,7 +16,7 @@ public class FetchResult {
     @Autowired
     private UpdateResult updateResult;
 
-    @Scheduled(initialDelay = 1000, fixedRate = 5000)
+    @Scheduled(initialDelay = 1000, fixedRate = 2000)
     public void fetchResult() {
         ResultRedis resultRedis = redisTemplate.opsForList().rightPop(2);
         if (resultRedis != null) {

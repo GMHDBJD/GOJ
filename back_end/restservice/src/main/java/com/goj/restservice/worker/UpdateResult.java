@@ -1,5 +1,7 @@
 package com.goj.restservice.worker;
 
+import java.time.LocalDateTime;
+
 import com.goj.restservice.entity.ResultRedis;
 import com.goj.restservice.repository.SubmissionRepository;
 
@@ -13,7 +15,7 @@ class UpdateResult {
     private SubmissionRepository submissionRepository;
 
     void update(ResultRedis resultRedis) {
-        submissionRepository.updateResult(resultRedis.getSubmissionId(), (short) 1, resultRedis.getMemory(),
-                resultRedis.getTime());
+        submissionRepository.updateResult(resultRedis.getSubmissionId(), resultRedis.getResult(),
+                resultRedis.getMemory(), resultRedis.getTime(), resultRedis.getCodeLength(), LocalDateTime.now());
     }
 }

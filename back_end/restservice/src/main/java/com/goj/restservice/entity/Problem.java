@@ -38,16 +38,22 @@ public class Problem {
     @Column(length = 100)
     private String source;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(columnDefinition = "TEXT")
     private String input;
 
+    @Column(columnDefinition = "TEXT")
     private String output;
 
+    @Column(columnDefinition = "TEXT")
     private String sampleInput;
 
+    @Column(columnDefinition = "TEXT")
     private String sampleOutput;
 
+    @Column(columnDefinition = "TEXT")
     private String hint;
 
     @CreatedDate

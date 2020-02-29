@@ -18,5 +18,7 @@ public class ResultRedis implements Serializable {
 
     Long memory;
 
-    String result;
+    Long codeLength;
+
+    Short result;
 }
