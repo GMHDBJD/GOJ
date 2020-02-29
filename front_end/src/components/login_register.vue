@@ -25,6 +25,14 @@
                 required
                 v-model="loginPassword"
               ></v-text-field>
+              <v-text-field
+                label="error"
+                required
+                value="invalid username/password"
+                v-if="showError"
+                color="red"
+                disabled
+              ></v-text-field>
               <v-btn block color="primary" class="mr-4" @click="login">
                 Login
               </v-btn>
@@ -104,7 +112,8 @@ export default {
         v => v === this.registerPassword || 'Passwords do not match'
       ],
       loginUsernameRules: [v => !!v || 'username is required'],
-      loginPasswordRules: [v => !!v || 'password is required']
+      loginPasswordRules: [v => !!v || 'password is required'],
+      showError: false
     }
   },
   methods: {
@@ -119,9 +128,10 @@ export default {
         .then(response => {
           this.$emit('close')
           this.$store.commit('login', response.data)
+          this.$router.push('/')
         })
-        .catch(() => {
-          EventBus.$emit('callLogin')
+        .catch(error => {
+          EventBus.$emit('callAlert', error)
         })
     },
     register(e) {
@@ -131,7 +141,7 @@ export default {
         .post('auth/signup', {
           username: this.registerUsername,
           password: this.registerPassword,
-          confirmPassword: this.registerPassword,
+          confirmPassword: this.confirmPassword,
           email: this.email
         })
         .then(() => {

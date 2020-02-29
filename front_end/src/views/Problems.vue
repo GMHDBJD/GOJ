@@ -84,8 +84,8 @@ export default {
         .then(() => {
           this.add = false
         })
-        .catch(() => {
-          EventBus.$emit('callLogin')
+        .catch(error => {
+          EventBus.$emit('callAlert', error)
         })
     }
   }

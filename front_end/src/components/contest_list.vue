@@ -126,8 +126,6 @@ export default {
       } else {
         if (contest.joined || this.$store.getters.isAdmin) {
           this.$router.push(`/contests/${contest.contestId}`)
-        } else if (new Date(contest.startTime) < new Date()) {
-          console.log('Contest has begun')
         } else {
           this.requirePassword = contest.requirePassword
           this.contestId = contest.contestId

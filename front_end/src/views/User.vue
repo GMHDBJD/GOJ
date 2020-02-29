@@ -1,22 +1,9 @@
 <template>
   <div id="user">
     <v-card class="mx-auto" max-width="450">
-      <v-img
-        src="https://cdn.vuetifyjs.com/images/cards/house.jpg"
-        :aspect-ratio="16 / 9"
-      >
-      </v-img>
+      <v-img src="home.jpg" :aspect-ratio="16 / 9"> </v-img>
       <v-card-title class="display-2 mb-2">
         {{ username }}
-        <v-spacer></v-spacer>
-        <v-btn
-          v-if="this.$store.state.username == this.$route.params.username"
-          color="secondary"
-          dark
-          class="mr-4"
-        >
-          change avatar
-        </v-btn>
       </v-card-title>
 
       <v-divider class="mt-6 mx-4"></v-divider>
@@ -44,7 +31,7 @@
             <v-chip
               color="red"
               text-color="white"
-              :to="'/status?username=' + username + '&result=1'"
+              :to="'/status?username=' + username + '&result=Accept'"
             >
               {{ accepted }}
             </v-chip>

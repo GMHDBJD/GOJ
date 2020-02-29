@@ -67,6 +67,16 @@
     </v-app-bar>
 
     <v-content app>
+      <v-alert
+        v-if="this.$store.state.isMobile"
+        dense
+        border="left"
+        type="warning"
+        color="red"
+        dismissible
+      >
+        You'd better use <strong>desktop</strong> version.
+      </v-alert>
       <v-dialog v-model="showAlert" max-width="500px">
         <v-alert type="error">
           <div class="display-2">{{ status }}</div>
@@ -87,14 +97,22 @@
     <v-footer v-if="$route.meta.show_footer" padless>
       <v-card flat tile width="100%" class="primary white--text text-center">
         <v-card-text>
-          <v-btn icon class="mx-4 white--text">
-            <v-icon size="24px">mdi-google</v-icon>
+          <v-btn icon class="mx-4 white--text" to="https://github.com/gmhdbjd">
+            <v-icon size="24px">mdi-github-circle</v-icon>
           </v-btn>
-          <v-btn icon class="mx-4 white--text">
-            <v-icon size="24px">mdi-google</v-icon>
+          <v-btn
+            icon
+            class="mx-4 white--text"
+            href="mailto:gmhdbjd@gmial.com?subject=contact me"
+          >
+            <v-icon size="24px">mdi-email-outline</v-icon>
           </v-btn>
-          <v-btn icon class="mx-4 white--text">
-            <v-icon size="24px">mdi-google</v-icon>
+          <v-btn
+            icon
+            class="mx-4 white--text"
+            to="http://www.sysu.edu.cn/2012/cn/index.htm"
+          >
+            <v-icon size="24px">mdi-school-outline</v-icon>
           </v-btn>
         </v-card-text>
 

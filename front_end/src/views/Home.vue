@@ -91,50 +91,42 @@
       <v-container fluid>
         <v-row>
           <v-col cols="12" md="6" sm="6">
-            <v-img
-              class="white--text"
-              src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-              aspect-ratio="1.7"
-            >
-              <v-card-title class="display-2">
-                problem
-              </v-card-title>
-            </v-img>
+            <router-link to="/problems" tag="div">
+              <v-img class="white--text" src="problem.jpg" aspect-ratio="1.7">
+                <v-card-title class="display-2">
+                  problem
+                </v-card-title>
+              </v-img>
+            </router-link>
           </v-col>
           <v-col cols="12" md="6" sm="6">
-            <v-img
-              class="white--text"
-              src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-              aspect-ratio="1.7"
-            >
-              <v-card-title class="display-2">
-                contest
-              </v-card-title>
-            </v-img>
+            <router-link to="/problems" tag="div">
+              <v-img class="white--text" src="contest.jpg" aspect-ratio="1.7">
+                <v-card-title class="display-2">
+                  contest
+                </v-card-title>
+              </v-img>
+            </router-link>
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="12" md="6" sm="6">
-            <v-img
-              class="white--text"
-              src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-              aspect-ratio="1.7"
-            >
-              <v-card-title class="display-2">
-                statu
-              </v-card-title>
-            </v-img>
+            <router-link to="/problems" tag="div">
+              <v-img class="white--text" src="statu.jpg" aspect-ratio="1.7">
+                <v-card-title class="display-2">
+                  statu
+                </v-card-title>
+              </v-img>
+            </router-link>
           </v-col>
           <v-col cols="12" md="6" sm="6">
-            <v-img
-              class="white--text"
-              src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-              aspect-ratio="1.7"
-            >
-              <v-card-title class="display-2">
-                ranking
-              </v-card-title>
-            </v-img>
+            <router-link to="/problems" tag="div">
+              <v-img class="white--text" src="ranking.jpg" aspect-ratio="1.7">
+                <v-card-title class="display-2">
+                  ranking
+                </v-card-title>
+              </v-img>
+            </router-link>
           </v-col>
         </v-row></v-container
       >

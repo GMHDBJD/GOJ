@@ -8,6 +8,7 @@ import Contest from '../views/Contest.vue'
 import Status from '../views/Status.vue'
 import Statu from '../views/Statu.vue'
 import Ranking from '../views/Ranking.vue'
+import Queue from '../views/Queue.vue'
 import User from '../views/User.vue'
 import store from '@/store'
 import { EventBus } from '@/eventbus'
@@ -58,6 +59,11 @@ const routes = [
     path: '/ranking',
     name: 'ranking',
     component: Ranking
+  },
+  {
+    path: '/queue',
+    name: 'queue',
+    component: Queue
   },
   {
     path: '/problems/:problemId',

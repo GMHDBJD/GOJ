@@ -24,8 +24,8 @@
               <td>{{ username }}</td>
               <td>{{ time }}</td>
               <td>{{ memory }}</td>
-              <td>{{ result }}</td>
-              <td>{{ language }}</td>
+              <td>{{ results[result] }}</td>
+              <td>{{ lg }}</td>
               <td>{{ submitDateTime }}</td>
               <td>{{ codeLength }}</td>
               <td>{{ judgeTime }}</td>
@@ -67,7 +67,20 @@ export default {
       submitDateTime: null,
       codeLength: null,
       judgeTime: null,
-      code: null
+      code: null,
+      results: [
+        'Judging',
+        'Complie Error',
+        'Runtime Error',
+        'Time Limit Error',
+        'Accept'
+      ]
+    }
+  },
+  computed: {
+    lg() {
+      let languages = ['c', 'c++', 'python', 'python3', 'java']
+      return languages[this.language]
     }
   },
   mounted() {

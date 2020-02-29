@@ -152,8 +152,8 @@ export default {
           this.add = false
           this.getData()
         })
-        .catch(() => {
-          EventBus.$emit('callLogin')
+        .catch(error => {
+          EventBus.$emit('callAlert', error)
         })
     },
     updateOne() {
@@ -168,8 +168,8 @@ export default {
         .then(() => {
           this.update = false
         })
-        .catch(() => {
-          EventBus.$emit('callLogin')
+        .catch(error => {
+          EventBus.$emit('callAlert', error)
         })
     },
     deleteOne() {
@@ -178,8 +178,8 @@ export default {
         .then(() => {
           this.remove = false
         })
-        .catch(() => {
-          EventBus.$emit('callLogin')
+        .catch(error => {
+          EventBus.$emit('callAlert', error)
         })
     },
     getData() {

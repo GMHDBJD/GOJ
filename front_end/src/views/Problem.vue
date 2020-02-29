@@ -59,6 +59,20 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="showResult" persistent max-width="500px">
+      <v-card color="red">
+        <v-card-title>
+          {{ results[result] }}
+        </v-card-title>
+        <v-btn
+          color="green darken-1"
+          v-if="result != 0"
+          text
+          @click="showResult = false"
+          >close</v-btn
+        >
+      </v-card>
+    </v-dialog>
     <v-card>
       <v-tabs color="secondary" v-model="tabs">
         <v-tab>Problem</v-tab>
@@ -125,7 +139,13 @@
               <v-select :items="languages" v-model="language" label="language">
               </v-select>
               <v-textarea filled height="80vh" v-model="code"></v-textarea>
-              <v-btn large color="secondary" @click="submitCode">Submit </v-btn>
+              <v-btn
+                large
+                color="secondary"
+                @click="submitCode"
+                :disabled="disable"
+                >Submit
+              </v-btn>
             </v-container>
           </v-form>
         </v-tab-item>
@@ -161,8 +181,21 @@ export default {
       tabs: 0,
       update: false,
       remove: false,
-      languages: [1, 2, 3, 4],
-      language: 1
+      showResult: false,
+      languages: ['c', 'c++', 'python', 'python3', 'java'],
+      language: 'c',
+      disable: false,
+      results: [
+        'Judging',
+        'Complie Error',
+        'Runtime Error',
+        'Time Limit Error',
+        'Accept'
+      ],
+      result: 0,
+      location: null,
+      change: false,
+      url: this.$route.path
     }
   },
   methods: {
@@ -183,8 +216,8 @@ export default {
         .then(() => {
           this.update = false
         })
-        .catch(() => {
-          EventBus.$emit('callLogin')
+        .catch(error => {
+          EventBus.$emit('callAlert', error)
         })
     },
     deleteOne() {
@@ -199,25 +232,50 @@ export default {
         .then(() => {
           this.remove = false
         })
-        .catch(() => {
-          EventBus.$emit('callLogin')
+        .catch(error => {
+          EventBus.$emit('callAlert', error)
         })
     },
+    getResult() {
+      if (this.result == 0 && this.$route.path == this.url) {
+        axios
+          .get(this.location)
+          .then(response => {
+            this.result = response.data.result
+          })
+          .catch(error => {
+            EventBus.$emit('callAlert', error)
+          })
+        setTimeout(this.getResult, 2000)
+      }
+    },
     submitCode() {
-      if (!this.$store.state.isLogin) {
+      if (this.$store.state.isLogin == false) {
         EventBus.$emit('callLogin')
         return
       }
+      if (this.disable) return
+      this.disable = true
       axios
         .post(`submissions`, {
           problemId: this.problemId,
           contestId: this.contestId,
           code: this.code,
-          language: this.language
+          language: this.choice
         })
-        .then()
-        .catch(error => EventBus.$emit('callAlert', error))
+        .then(response => {
+          this.showResult = true
+          this.location = response.headers.location
+          this.getResult()
+        })
+        .catch(error => {
+          this.disable = true
+          EventBus.$emit('callAlert', error)
+        })
     }
+  },
+  onUrlChange() {
+    this.change = true
   },
   mounted() {
     axios
@@ -239,6 +297,11 @@ export default {
         this.ratio = response.data.ratio
       })
       .catch(error => EventBus.$emit('callAlert', error))
+  },
+  computed: {
+    choice() {
+      return this.languages.indexOf(this.language)
+    }
   }
 }
 </script>
