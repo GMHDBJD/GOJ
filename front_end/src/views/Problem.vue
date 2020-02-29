@@ -85,9 +85,12 @@
               {{ title }}
             </v-card-title>
             <v-card-subtitle>
-              Time Limit: {{ timeLimit }} Memory Limit: {{ memoryLimit }}<br />
-              Submit: {{ submit }} Accepted: {{ accepted }}<br />
-              Source: {{ source }} CreateDate:{{ createDate }}
+              Time Limit: {{ timeLimit }}S<br />
+              Memory Limit: {{ memoryLimit }}KB<br />
+              Submit: {{ submit }}<br />
+              Accepted: {{ accepted }}<br />
+              Source: {{ source }}<br />
+              CreateDate:{{ createDate }}
             </v-card-subtitle>
             <v-card-title>
               Description
@@ -115,14 +118,20 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
+              <xmp style="background-color:#ccc"
+>
               {{ sampleInput }}
+              </xmp>
             </v-card-text>
             <v-card-title>
               sampleOutput
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
+              <xmp style="background-color:#ccc"
+>
               {{ sampleOutput }}
+              </xmp>
             </v-card-text>
             <v-card-title>
               Hint
@@ -136,9 +145,19 @@
         <v-tab-item transition="false" reverse-transition="false">
           <v-form>
             <v-container fluid>
-              <v-select :items="languages" v-model="language" label="language">
+              <v-select
+                :items="languages"
+                v-model="language"
+                :disabled="disable"
+                label="language"
+              >
               </v-select>
-              <v-textarea filled height="80vh" v-model="code"></v-textarea>
+              <v-textarea
+                filled
+                height="80vh"
+                v-model="code"
+                :disabled="disable"
+              ></v-textarea>
               <v-btn
                 large
                 color="secondary"
@@ -190,6 +209,7 @@ export default {
         'Complie Error',
         'Runtime Error',
         'Time Limit Error',
+        'Wrong Answer',
         'Accept'
       ],
       result: 0,

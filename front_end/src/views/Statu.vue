@@ -73,6 +73,7 @@ export default {
         'Complie Error',
         'Runtime Error',
         'Time Limit Error',
+        'Wrong Answer',
         'Accept'
       ]
     }
