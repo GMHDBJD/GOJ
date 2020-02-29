@@ -12,11 +12,13 @@ RUN pip3 install --requirement /tmp/requirements.txt
 RUN chmod 700 /tmp
 RUN useradd -m -u 8723 -s /bin/bash judge
 WORKDIR /home/judge
-RUN mkdir env env/io_cache
+RUN mkdir env iocache
 RUN chmod 755 env
-RUN chmod 700 env/io_cache
+RUN chmod 700 iocache
 RUN chown judge env
+RUN chown judge iocache
 RUN chgrp judge env
+RUN chgrp judge iocache
 COPY judge.py /home/judge/
 EXPOSE 8723
 CMD ["python3", "judge.py"]
