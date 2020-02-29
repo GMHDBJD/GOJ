@@ -1,6 +1,7 @@
 # DOCKER-VERSION 1.12.0
 FROM ubuntu:latest
 RUN apt-get update && apt-get install -y \
+  vim \
   openjdk-8-jdk \
   g++ \
   python \
