@@ -31,7 +31,7 @@ import com.goj.restservice.projection.ProblemSummary;
 import com.goj.restservice.repository.ProblemRepository;
 
 @RestController
-@RequestMapping(path = "/v1/problems")
+@RequestMapping(path = "/api/v1/problems")
 @Validated
 public class ProblemController {
 

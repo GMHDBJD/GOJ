@@ -35,7 +35,7 @@ import com.goj.restservice.repository.ContestUserRepository;
 import com.goj.restservice.repository.SubmissionRepository;
 
 @RestController
-@RequestMapping(path = "/v1/contests")
+@RequestMapping(path = "/api/v1/contests")
 @Validated
 public class ContestController {
     @Autowired

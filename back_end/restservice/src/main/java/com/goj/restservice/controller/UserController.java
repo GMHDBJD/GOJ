@@ -31,7 +31,7 @@ import com.goj.restservice.projection.UserSummary;
 import com.goj.restservice.repository.UserRepository;
 
 @RestController
-@RequestMapping(path = "/v1/users")
+@RequestMapping(path = "/api/v1/users")
 @Validated
 public class UserController {
 

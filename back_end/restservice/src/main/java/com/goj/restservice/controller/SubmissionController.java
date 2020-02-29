@@ -2,6 +2,7 @@ package com.goj.restservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -30,6 +31,7 @@ import com.goj.restservice.entity.ContestUserKey;
 import com.goj.restservice.entity.Problem;
 import com.goj.restservice.entity.SourceCode;
 import com.goj.restservice.entity.Submission;
+import com.goj.restservice.entity.SubmissionRedis;
 import com.goj.restservice.entity.User;
 import com.goj.restservice.exception.CustomException;
 import com.goj.restservice.form.SubmissionForm;
@@ -44,93 +46,110 @@ import com.goj.restservice.repository.SubmissionRepository;
 import com.goj.restservice.repository.UserRepository;
 
 @RestController
-@RequestMapping(path = "/v1/submissions")
+@RequestMapping(path = "/api/v1/submissions")
 @Validated
 public class SubmissionController {
-    @Autowired
-    private SubmissionRepository submissionRepository;
+        @Autowired
+        private SubmissionRepository submissionRepository;
 
-    @Autowired
-    private ProblemRepository problemRepository;
+        @Autowired
+        private ProblemRepository problemRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private ContestRepository contestRepository;
+        @Autowired
+        private ContestRepository contestRepository;
 
-    @Autowired
-    private ContestProblemRepository contestProblemRepository;
+        @Autowired
+        private ContestProblemRepository contestProblemRepository;
 
-    @Autowired
-    private ContestUserRepository contestUserRepository;
+        @Autowired
+        private ContestUserRepository contestUserRepository;
 
-    @Autowired
-    private SourceCodeRepository sourceCodeRepository;
+        @Autowired
+        private SourceCodeRepository sourceCodeRepository;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void create(@Valid @RequestBody SubmissionForm submissionForm, HttpServletRequest request,
-            HttpServletResponse response, @AuthenticationPrincipal User user) {
+        @Autowired
+        private RedisTemplate<Integer, SubmissionRedis> redisTemplate;
 
-        Problem problem = problemRepository.findById(submissionForm.getProblemId())
-                .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED)
+        public void create(@Valid @RequestBody SubmissionForm submissionForm, HttpServletRequest request,
+                        HttpServletResponse response, @AuthenticationPrincipal User user) {
 
-        User submitUser = userRepository.findById(user.getUserId()).get();
+                Problem problem = problemRepository.findById(submissionForm.getProblemId())
+                                .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
 
-        ContestProblem contestProblem = null;
-        Contest contest = null;
-        if (submissionForm.getContestId() != null) {
-            contestProblem = contestProblemRepository
-                    .findById(new ContestProblemKey(submissionForm.getContestId(), submissionForm.getProblemId()))
-                    .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
+                User submitUser = userRepository.findById(user.getUserId()).get();
 
-            ContestUser contestUser = contestUserRepository
-                    .findById(new ContestUserKey(submissionForm.getContestId(), submitUser.getUserId()))
-                    .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
+                ContestProblem contestProblem = null;
+                Contest contest = null;
+                if (submissionForm.getContestId() != null) {
+                        contestProblem = contestProblemRepository
+                                        .findById(new ContestProblemKey(submissionForm.getContestId(),
+                                                        submissionForm.getProblemId()))
+                                        .orElseThrow(() -> new CustomException("Resource not found.",
+                                                        HttpStatus.NOT_FOUND));
 
-            contest = contestRepository.findById(submissionForm.getContestId()).get();
+                        ContestUser contestUser = contestUserRepository
+                                        .findById(new ContestUserKey(submissionForm.getContestId(),
+                                                        submitUser.getUserId()))
+                                        .orElseThrow(() -> new CustomException("Resource not found.",
+                                                        HttpStatus.NOT_FOUND));
 
-            if (contest.getEndTime().isBefore(LocalDateTime.now()))
-                throw new CustomException("Contest has ended", HttpStatus.METHOD_NOT_ALLOWED);
+                        contest = contestRepository.findById(submissionForm.getContestId()).get();
 
-            contest.removeContestProblem(contestProblem);
-            contestProblem.setSubmit(contestProblem.getSubmit() + 1);
-            contest.addContestProblem(contestProblem);
+                        if (contest.getEndTime().isBefore(LocalDateTime.now()))
+                                throw new CustomException("Contest has ended", HttpStatus.METHOD_NOT_ALLOWED);
 
-            contest.removeContestUser(contestUser);
-            contestUser.setSubmit(contestUser.getSubmit() + 1);
-            contest.addContestUser(contestUser);
+                        contest.removeContestProblem(contestProblem);
+                        contestProblem.setSubmit(contestProblem.getSubmit() + 1);
+                        contest.addContestProblem(contestProblem);
+
+                        contest.removeContestUser(contestUser);
+                        contestUser.setSubmit(contestUser.getSubmit() + 1);
+                        contest.addContestUser(contestUser);
+                }
+
+                problem.setSubmit(problem.getSubmit() + 1);
+                submitUser.setSubmit(submitUser.getSubmit() + 1);
+
+                Submission submission = new Submission(problem, submitUser, contest, submissionForm.getLanguage());
+
+                SourceCode sourceCode = new SourceCode(submission, submissionForm.getCode());
+
+                SourceCode createSourceCode = sourceCodeRepository.save(sourceCode);
+
+                String[] arr = { "c", "c++", "python", "python3", "java" };
+
+                SubmissionRedis submissionRedis = new SubmissionRedis(createSourceCode.getSubmissionId(),
+                                submissionForm.getCode(), submissionForm.getProblemId(),
+                                arr[submissionForm.getLanguage()], problem.getTimeLimit(), problem.getMemoryLimit());
+
+                redisTemplate.opsForList().leftPush(1, submissionRedis);
+
+                response.setHeader("Location",
+                                request.getRequestURL().append("/").append(submission.getSubmissionId()).toString());
+
         }
 
-        problem.setSubmit(problem.getSubmit() + 1);
-        submitUser.setSubmit(submitUser.getSubmit() + 1);
+        @GetMapping
+        public @ResponseBody Iterable<SubmissionSummary> readAll(
+                        @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
+                        @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page) {
+                return submissionRepository.findAllSubmissionSummaryBy(PageRequest.of(page - 1, per_page));
+        }
 
-        Submission submission = new Submission(problem, submitUser, contest, submissionForm.getLanguage());
-
-        SourceCode sourceCode = new SourceCode(submission, submissionForm.getCode());
-
-        sourceCodeRepository.save(sourceCode);
-
-        response.setHeader("Location",
-                request.getRequestURL().append("/").append(submission.getSubmissionId()).toString());
-
-    }
-
-    @GetMapping
-    public @ResponseBody Iterable<SubmissionSummary> readAll(
-            @RequestParam(value = "page", defaultValue = "1") @Min(value = 1, message = "page must be greater than or equal to 1") int page,
-            @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page) {
-        return submissionRepository.findAllSubmissionSummaryBy(PageRequest.of(page - 1, per_page));
-    }
-
-    @GetMapping("/{submissionId}")
-    public @ResponseBody SubmissionDetail readOne(@PathVariable("submissionId") Long submissionId,
-            @AuthenticationPrincipal User user) {
-        SubmissionDetail submissionDetail = submissionRepository.findSubmissionDetailBySubmissionId(submissionId)
-                .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
-        if (!user.getUsername().equals(submissionDetail.getUserUsername()) && !user.getRoles().contains("ROLE_ADMIN"))
-            throw new CustomException("Method not allowed.", HttpStatus.METHOD_NOT_ALLOWED);
-        return submissionDetail;
-    }
+        @GetMapping("/{submissionId}")
+        public @ResponseBody SubmissionDetail readOne(@PathVariable("submissionId") Long submissionId,
+                        @AuthenticationPrincipal User user) {
+                SubmissionDetail submissionDetail = submissionRepository
+                                .findSubmissionDetailBySubmissionId(submissionId)
+                                .orElseThrow(() -> new CustomException("Resource not found.", HttpStatus.NOT_FOUND));
+                if (!user.getUsername().equals(submissionDetail.getUserUsername())
+                                && !user.getRoles().contains("ROLE_ADMIN"))
+                        throw new CustomException("Method not allowed.", HttpStatus.METHOD_NOT_ALLOWED);
+                return submissionDetail;
+        }
 }

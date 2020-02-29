@@ -36,7 +36,7 @@ import com.goj.restservice.repository.ContestUserRepository;
 import com.goj.restservice.repository.ProblemRepository;
 
 @RestController
-@RequestMapping(path = "/v1/contests/{contestId}/problems")
+@RequestMapping(path = "/api/v1/contests/{contestId}/problems")
 @Validated
 public class ContestProblemController {
     @Autowired

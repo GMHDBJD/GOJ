@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +31,7 @@ import com.goj.restservice.repository.ContestRepository;
 import com.goj.restservice.repository.ContestUserRepository;
 
 @RestController
-@RequestMapping(path = "/v1/contests/{contestId}/users")
+@RequestMapping(path = "api/v1/contests/{contestId}/users")
 @Validated
 public class ContestUserController {
     @Autowired
@@ -48,10 +47,6 @@ public class ContestUserController {
 
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new CustomException("Contest doesn't exist", HttpStatus.BAD_REQUEST));
-
-        if (contest.getStartTime().isBefore(LocalDateTime.now()))
-            throw new CustomException("Contest has begun.", HttpStatus.METHOD_NOT_ALLOWED);
-
 
         String password = contestUserForm.get("password");
         if (contest.getPassword() != null && !contest.getPassword().equals(password)) {
@@ -71,7 +66,7 @@ public class ContestUserController {
             @RequestParam(value = "per_page", defaultValue = "10000") @Min(value = 1, message = "per_page must be greater than or equal to 1") int per_page,
             @AuthenticationPrincipal User user) {
 
-        if (user.getRoles().contains("ROLE_GMH")
+        if (user.getRoles().contains("ROLE_ADMIN")
                 || contestUserRepository.existsById(new ContestUserKey(contestId, user.getUserId())))
             return contestUserRepository.findAllUserSummaryByContestId(contestId, PageRequest.of(page - 1, per_page));
         else

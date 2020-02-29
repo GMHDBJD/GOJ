@@ -33,7 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
-@RequestMapping(path = "/v1/auth")
+@RequestMapping(path = "/api/v1/auth")
 @Validated
 public class AuthController {
     @Autowired
