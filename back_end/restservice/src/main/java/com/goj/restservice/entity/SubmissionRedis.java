@@ -23,4 +23,8 @@ public class SubmissionRedis implements Serializable {
     Long timeLimit;
 
     Long memoryLimit;
+
+    Long userId;
+
+    Long contestId;
 }

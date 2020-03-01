@@ -2,11 +2,14 @@ package com.goj.restservice.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import com.goj.restservice.entity.Problem;
 import com.goj.restservice.projection.ProblemDetail;
@@ -24,4 +27,9 @@ public interface ProblemRepository extends PagingAndSortingRepository<Problem, L
     Page<ProblemSummary> findAllProblemSummaryBy(Pageable pageable);
 
     Optional<ProblemDetail> findProblemDetailByProblemId(Long problemId);
+
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true, value = "UPDATE problem p SET p.accepted = p.accepted+1 WHERE p.problem_id = :problemId")
+    void updateProblemAccepted(@Param("problemId") Long problemId);
 }

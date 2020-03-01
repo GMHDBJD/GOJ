@@ -103,13 +103,11 @@ public class SubmissionController {
                         if (contest.getEndTime().isBefore(LocalDateTime.now()))
                                 throw new CustomException("Contest has ended", HttpStatus.METHOD_NOT_ALLOWED);
 
-                        contest.removeContestProblem(contestProblem);
                         contestProblem.setSubmit(contestProblem.getSubmit() + 1);
-                        contest.addContestProblem(contestProblem);
+                        contestProblemRepository.save(contestProblem);
 
-                        contest.removeContestUser(contestUser);
                         contestUser.setSubmit(contestUser.getSubmit() + 1);
-                        contest.addContestUser(contestUser);
+                        contestUserRepository.save(contestUser);
                 }
 
                 problem.setSubmit(problem.getSubmit() + 1);
@@ -125,7 +123,8 @@ public class SubmissionController {
 
                 SubmissionRedis submissionRedis = new SubmissionRedis(createSourceCode.getSubmissionId(),
                                 submissionForm.getCode(), submissionForm.getProblemId(),
-                                arr[submissionForm.getLanguage()], problem.getTimeLimit(), problem.getMemoryLimit());
+                                arr[submissionForm.getLanguage()], problem.getTimeLimit(), problem.getMemoryLimit(),
+                                submitUser.getUserId(), submissionForm.getContestId());
 
                 redisTemplate.opsForList().leftPush(1, submissionRedis);
 

@@ -21,4 +21,10 @@ public class ResultRedis implements Serializable {
     Long codeLength;
 
     Short result;
+
+    Long problemId;
+
+    Long userId;
+
+    Long contestId;
 }

@@ -31,15 +31,15 @@ public class Submission {
     @OneToOne(mappedBy = "submission", cascade = CascadeType.ALL)
     private SourceCode sourceCode;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "problem_id", nullable = false)
     Problem problem;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "contest_id", nullable = true)
     Contest contest;
 
