@@ -18,7 +18,10 @@ class Judge():
             'memory': None,
             'result': None,
             'submissionId': None,
-            'codeLength': None
+            'problemId': None,
+            'codeLength': None,
+            'userId': None,
+            'contestId': None
         }
 
         self.languages = {
@@ -44,9 +47,14 @@ class Judge():
             self.codeFilename = 'Main'
             self.timeLimit = submission['timeLimit']
             self.memoryLimit = submission['memoryLimit']
+            self.userId = submission['userId']
+            self.contestId = submission['contestId']
 
             self.result['submissionId'] = self.submissionId
             self.result['codeLength'] = len(self.code)
+            self.result['problemId'] = self.problemId
+            self.result['userId'] = self.userId
+            self.result['contestId'] = self.contestId
 
             self.judge()
 
@@ -98,7 +106,6 @@ class Judge():
             os.system("chmod 777 "+inputFilename)
             os.system("chmod 777 "+outputFilename)
 
-            os.system("ls env/")
             starttime = time.time()
             proc = subprocess.Popen([cmd], shell=True, preexec_fn=os.setsid)
             try:
