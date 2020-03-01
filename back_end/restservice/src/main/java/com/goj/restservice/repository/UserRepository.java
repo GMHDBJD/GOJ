@@ -23,7 +23,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
-    @Query(nativeQuery = true, value = "SELECT username, nickname, email, register_time as registerTime, submit, accepted, solved, @curRank\\:=@curRank + 1 AS rank FROM user u, (SELECT @curRank\\:=0) r WHERE username = ?1 ORDER BY accepted DESC")
+    @Query(nativeQuery = true, value = "SELECT * from (SELECT username, nickname, submit, accepted, solved, @curRank\\:=@curRank + 1 AS rank FROM user u, (SELECT @curRank\\:=0) r ORDER BY solved DESC) ss WHERE ss.username = :username")
     Optional<UserDetail> findUserDetailByUsername(String username);
 
     boolean existsByUsername(String username);
