@@ -1,25 +1,19 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Problems from '../views/Problems.vue'
-import Problem from '../views/Problem.vue'
-import Contests from '../views/Contests.vue'
-import Contest from '../views/Contest.vue'
-import Status from '../views/Status.vue'
-import Statu from '../views/Statu.vue'
-import Ranking from '../views/Ranking.vue'
-import Queue from '../views/Queue.vue'
-import User from '../views/User.vue'
 import store from '@/store'
 import { EventBus } from '@/eventbus'
 
 Vue.use(VueRouter)
 
+function lazyLoad(view) {
+  return () => import(`@/views/${view}.vue`)
+}
+
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home,
+    component: lazyLoad('Home'),
     meta: {
       show_footer: true
     }
@@ -27,22 +21,22 @@ const routes = [
   {
     path: '/problems',
     name: 'problems',
-    component: Problems
+    component: lazyLoad('Problems')
   },
   {
     path: '/contests',
     name: 'contests',
-    component: Contests
+    component: lazyLoad('Contests')
   },
   {
     path: '/status',
     name: 'status',
-    component: Status
+    component: lazyLoad('Status')
   },
   {
     path: '/contests/:contestId/status',
     name: 'contestStatus',
-    component: Status,
+    component: lazyLoad('Status'),
     meta: {
       requireAuth: true
     }
@@ -50,7 +44,7 @@ const routes = [
   {
     path: '/contests/:contestId/ranking',
     name: 'contestRanking',
-    component: Ranking,
+    component: lazyLoad('Ranking'),
     meta: {
       requireAuth: true
     }
@@ -58,22 +52,22 @@ const routes = [
   {
     path: '/ranking',
     name: 'ranking',
-    component: Ranking
+    component: lazyLoad('Ranking')
   },
   {
     path: '/queue',
     name: 'queue',
-    component: Queue
+    component: lazyLoad('Queue')
   },
   {
     path: '/problems/:problemId',
     name: 'problem',
-    component: Problem
+    component: lazyLoad('Problem')
   },
   {
     path: '/contests/:contestId/problems/:problemId',
     name: 'contestProblem',
-    component: Problem,
+    component: lazyLoad('Problem'),
     meta: {
       requireAuth: true
     }
@@ -81,7 +75,7 @@ const routes = [
   {
     path: '/contests/:contestId',
     name: 'contest',
-    component: Contest,
+    component: lazyLoad('Contest'),
     meta: {
       requireAuth: true
     }
@@ -89,7 +83,7 @@ const routes = [
   {
     path: '/contests/:contestId/problems/:problemId',
     name: 'ContestProblem',
-    component: Problem,
+    component: lazyLoad('Problem'),
     meta: {
       requireAuth: true
     }
@@ -97,7 +91,7 @@ const routes = [
   {
     path: '/status/:statuId',
     name: 'statu',
-    component: Statu,
+    component: lazyLoad('Statu'),
     meta: {
       requireAuth: true
     }
@@ -105,7 +99,7 @@ const routes = [
   {
     path: '/users/:username',
     name: 'user',
-    component: User
+    component: lazyLoad('User')
   }
 ]
 
