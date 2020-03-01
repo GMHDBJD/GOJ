@@ -14,7 +14,7 @@
       </v-card-title>
       <v-data-table
         :headers="headers"
-        :items="rankedItems"
+        :items="users"
         :search="search"
         :page.sync="page"
         :items-per-page="itemsPerPage"
@@ -75,20 +75,6 @@ export default {
   mounted() {
     this.getData()
   },
-  computed: {
-    rankedItems() {
-      const items = []
-      if (this.users.length > 0) {
-        items[0] = this.users[0]
-        items[0].rank = 1
-        for (let index = 1; index < this.users.length; index++) {
-          items[index] = this.users[index]
-          items[index].rank = index + 1
-        }
-      }
-      return items
-    }
-  },
   methods: {
     getData() {
       let url = ''
@@ -100,6 +86,11 @@ export default {
         .get(url)
         .then(response => {
           this.users = response.data.content
+          this.users.forEach(element => {
+            element.ratio = element.submit
+              ? (element.accepted / element.submit).toFixed(2)
+              : 0
+          })
           this.totalPages = Math.floor(
             (response.data.totalElements + this.itemsPerPage - 1) /
               this.itemsPerPage

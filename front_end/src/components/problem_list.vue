@@ -74,6 +74,11 @@ export default {
         .get(url)
         .then(response => {
           this.problems = response.data.content
+          this.problems.forEach(element => {
+            element.ratio = element.submit
+              ? (element.accepted / element.submit).toFixed(2)
+              : 0
+          })
           this.totalPages = Math.floor(
             (response.data.totalElements + this.itemsPerPage - 1) /
               this.itemsPerPage

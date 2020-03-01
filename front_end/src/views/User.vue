@@ -43,9 +43,9 @@
         <v-row>
           <v-spacer></v-spacer>
           <div>
-            Ratio
+            Rank
             <v-chip color="orange" text-color="white">
-              {{ ratio }}
+              {{ rank }}
             </v-chip>
           </div>
           <v-spacer></v-spacer>
@@ -192,7 +192,9 @@ export default {
         this.registerTime = response.data.registerTime
         this.submit = response.data.submit
         this.accepted = response.data.accepted
-        this.ratio = response.data.ratio
+        this.ratio = response.data.submit
+          ? (response.data.accepted / response.data.submit).toFixed(2)
+          : 0
         this.rank = response.data.rank
         this.solved = response.data.solved
       })

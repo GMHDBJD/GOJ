@@ -85,7 +85,7 @@
               {{ title }}
             </v-card-title>
             <v-card-subtitle>
-              Time Limit: {{ timeLimit }}S<br />
+              Time Limit: {{ timeLimit }}MS<br />
               Memory Limit: {{ memoryLimit }}KB<br />
               Submit: {{ submit }}<br />
               Accepted: {{ accepted }}<br />
@@ -97,21 +97,30 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
+              <xmp style="background-color:#ccc"
+>
               {{ description }}
+              </xmp>
             </v-card-text>
             <v-card-title>
               Input
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
+              <xmp style="background-color:#ccc"
+>
               {{ input }}
+              </xmp>
             </v-card-text>
             <v-card-title>
               Output
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
+              <xmp style="background-color:#ccc"
+>
               {{ output }}
+              </xmp>
             </v-card-text>
             <v-card-title>
               sampleInput
@@ -314,7 +323,9 @@ export default {
         this.memoryLimit = response.data.memoryLimit
         this.submit = response.data.submit
         this.accepted = response.data.accepted
-        this.ratio = response.data.ratio
+        this.ratio = response.data.submit
+          ? (response.data.accepted / response.data.submit).toFixed(2)
+          : 0
       })
       .catch(error => EventBus.$emit('callAlert', error))
   },
