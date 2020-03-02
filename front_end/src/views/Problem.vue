@@ -97,30 +97,42 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              <xmp style="background-color:#ccc"
->
-              {{ description }}
-              </xmp>
+              <v-textarea
+                auto-grow
+                disabled
+                background-color="grey lighten-2"
+                filled
+                v-model="description"
+              >
+              </v-textarea>
             </v-card-text>
             <v-card-title>
               Input
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              <xmp style="background-color:#ccc"
->
-              {{ input }}
-              </xmp>
+              <v-textarea
+                auto-grow
+                disabled
+                filled
+                background-color="grey lighten-2"
+                v-model="input"
+              >
+              </v-textarea>
             </v-card-text>
             <v-card-title>
               Output
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              <xmp style="background-color:#ccc"
->
-              {{ output }}
-              </xmp>
+              <v-textarea
+                auto-grow
+                disabled
+                filled
+                background-color="grey lighten-2"
+                v-model="output"
+              >
+              </v-textarea>
             </v-card-text>
             <v-card-title>
               sampleInput
@@ -147,7 +159,14 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              {{ hint }}
+              <v-textarea
+                auto-grow
+                disabled
+                filled
+                background-color="grey lighten-2"
+                v-model="output"
+              >
+              </v-textarea>
             </v-card-text>
           </v-card>
         </v-tab-item>
@@ -323,9 +342,10 @@ export default {
         this.memoryLimit = response.data.memoryLimit
         this.submit = response.data.submit
         this.accepted = response.data.accepted
-        this.ratio = response.data.submit
-          ? (response.data.accepted / response.data.submit).toFixed(2)
-          : 0
+        this.ratio = (response.data.submit
+          ? response.data.accepted / response.data.submit
+          : 0.0
+        ).toFixed(2)
       })
       .catch(error => EventBus.$emit('callAlert', error))
   },

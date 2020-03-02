@@ -97,7 +97,11 @@
     <v-footer v-if="$route.meta.show_footer" padless>
       <v-card flat tile width="100%" class="primary white--text text-center">
         <v-card-text>
-          <v-btn icon class="mx-4 white--text" to="https://github.com/gmhdbjd">
+          <v-btn
+            icon
+            class="mx-4 white--text"
+            href="https://github.com/gmhdbjd"
+          >
             <v-icon size="24px">mdi-github-circle</v-icon>
           </v-btn>
           <v-btn
@@ -110,7 +114,7 @@
           <v-btn
             icon
             class="mx-4 white--text"
-            to="http://www.sysu.edu.cn/2012/cn/index.htm"
+            href="http://www.sysu.edu.cn/2012/cn/index.htm"
           >
             <v-icon size="24px">mdi-school-outline</v-icon>
           </v-btn>

@@ -192,9 +192,10 @@ export default {
         this.registerTime = response.data.registerTime
         this.submit = response.data.submit
         this.accepted = response.data.accepted
-        this.ratio = response.data.submit
-          ? (response.data.accepted / response.data.submit).toFixed(2)
-          : 0
+        this.ratio = (response.data.submit
+          ? response.data.accepted / response.data.submit
+          : 0.0
+        ).toFixed(2)
         this.rank = response.data.rank
         this.solved = response.data.solved
       })

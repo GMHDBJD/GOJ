@@ -77,9 +77,10 @@
           >
             {{ languages[item.language] }}
           </router-link>
-          <td v-else>
+
+          <div class="text-xs-left" v-else>
             {{ languages[item.language] }}
-          </td>
+          </div>
         </template>
       </v-data-table>
     </v-card>

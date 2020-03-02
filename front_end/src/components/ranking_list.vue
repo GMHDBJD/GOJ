@@ -87,9 +87,10 @@ export default {
         .then(response => {
           this.users = response.data.content
           this.users.forEach(element => {
-            element.ratio = element.submit
-              ? (element.accepted / element.submit).toFixed(2)
-              : 0
+            element.ratio = (element.submit
+              ? element.accepted / element.submit
+              : 0.0
+            ).toFixed(2)
           })
           this.totalPages = Math.floor(
             (response.data.totalElements + this.itemsPerPage - 1) /

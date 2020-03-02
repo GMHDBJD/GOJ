@@ -100,7 +100,7 @@
             </router-link>
           </v-col>
           <v-col cols="12" md="6" sm="6">
-            <router-link to="/problems" tag="div">
+            <router-link to="/contests" tag="div">
               <v-img class="white--text" src="contest.jpg" aspect-ratio="1.7">
                 <v-card-title class="display-2">
                   contest
@@ -111,7 +111,7 @@
         </v-row>
         <v-row>
           <v-col cols="12" md="6" sm="6">
-            <router-link to="/problems" tag="div">
+            <router-link to="/status" tag="div">
               <v-img class="white--text" src="statu.jpg" aspect-ratio="1.7">
                 <v-card-title class="display-2">
                   statu
@@ -120,7 +120,7 @@
             </router-link>
           </v-col>
           <v-col cols="12" md="6" sm="6">
-            <router-link to="/problems" tag="div">
+            <router-link to="/ranking" tag="div">
               <v-img class="white--text" src="ranking.jpg" aspect-ratio="1.7">
                 <v-card-title class="display-2">
                   ranking

@@ -39,7 +39,7 @@
           <v-textarea
             disabled
             filled
-            height="80vh"
+            auto-grow
             label="Code"
             v-model="code"
           ></v-textarea>
