@@ -9,6 +9,7 @@ import java.io.Serializable;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +19,7 @@ public class SubmissionForm implements Serializable {
     private static final long serialVersionUID = 1007114340746696309L;
 
     @NotNull(message = "code could not be null.")
+    @Size(max = 65535, message = "code to long")
     String code;
 
     @NotNull(message = "problemId could not be null.")
