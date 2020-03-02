@@ -164,7 +164,7 @@
                 disabled
                 filled
                 background-color="grey lighten-2"
-                v-model="output"
+                v-model="hint"
               >
               </v-textarea>
             </v-card-text>
