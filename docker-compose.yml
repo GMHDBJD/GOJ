@@ -1,0 +1,67 @@
+version: "2.1"
+
+networks:
+  goj:
+    ipam: # for static IP
+      config:
+        - subnet: "172.38.0.0/24"
+
+services:
+  mysql:
+    container_name: mysql
+    hostname: mysql
+    networks:
+      goj:
+        ipv4_address: 172.38.0.201
+    image: mysql:5.7.32
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_USER: sprintuser
+      MYSQL_PASSWORD: ThePassword
+      MYSQL_DATABASE: db_example
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 1s
+      retries: 10
+  
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    hostname: redis
+    networks:
+      goj:
+        ipv4_address: 172.38.0.202
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 1s
+      retries: 10
+
+  web:
+    build:
+      context: .
+    container_name: web
+    hostname: web
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      goj:
+        ipv4_address: 172.38.0.203
+    ports:
+      - "8080:8080"
+
+  judger:
+    build: ./judger
+    container_name: judger
+    hostname: judger
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      goj:
+        ipv4_address: 172.38.0.204

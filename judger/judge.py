@@ -8,7 +8,7 @@ import json
 class Judge():
 
     def __init__(self, host, port, db):
-        self.redis = redis.Redis(host='localhost', port=6379, db=0)
+        self.redis = redis.Redis(host='redis', port=6379, db=0)
         self.submissionId = None
         self.code = None
         self.problemId = None
@@ -154,11 +154,12 @@ class Judge():
 if __name__ == "__main__":
     judge = Judge(0, 0, 0)
 
+    print("GOJ : Welcome.")
     judge.runForever()
     try:
         judge.runForever()
     except KeyboardInterrupt as e:
-        print(" Keyboard Interrupt Detected.\n")
+        print("Keyboard Interrupt Detected.\n")
     except Exception as e:
         print("Exception : "+str(e)+"\n")
 

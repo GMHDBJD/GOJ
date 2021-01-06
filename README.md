@@ -1,6 +1,5 @@
 # GOJ
 My Online Judge:
-http://114.55.106.99/
 
 ![](screenshot/home.png)
 

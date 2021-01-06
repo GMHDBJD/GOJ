@@ -1,16 +1,13 @@
 # DOCKER-VERSION 1.12.0
-FROM ubuntu:latest
-RUN apt-get update && apt-get install -y \
-  vim \
-  openjdk-8-jdk \
-  g++ \
-  python \
-  python3 \
-  python3-pip
+FROM alpine:3.10
+
+RUN apk add --no-cache \
+    openjdk8 g++ python python3 py3-pip
+
 COPY requirements.txt /tmp/
 RUN pip3 install --requirement /tmp/requirements.txt
 RUN chmod 700 /tmp
-RUN useradd -m -u 8723 -s /bin/bash judge
+RUN adduser -u 8723 -s /bin/bash --disabled-password judge
 WORKDIR /home/judge
 RUN mkdir env iocache
 RUN chmod 755 env
