@@ -102,7 +102,7 @@
             class="mx-4 white--text"
             href="https://github.com/gmhdbjd"
           >
-            <v-icon size="24px">mdi-github-circle</v-icon>
+            <v-icon size="24px">mdi-github</v-icon>
           </v-btn>
           <v-btn
             icon

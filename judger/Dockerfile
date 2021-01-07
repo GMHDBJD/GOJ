@@ -18,4 +18,4 @@ RUN chgrp judge env
 RUN chgrp judge iocache
 COPY judge.py /home/judge/
 EXPOSE 8723
-CMD ["python3", "judge.py"]
+CMD ["python3", "-u", "judge.py"]
